@@ -145,14 +145,34 @@ class Table(Base):
 
 class Field(object):
 
-    def __init__(self, value=None, **kw):
-        self.value = None
+    def __init__(self, name, **kw):
+        self.name = name
+        self.pattern = kw.get('pattern')
 
     def get(self):
         return self.value
 
     def set(self, value):
+
+        if self.pattern.type in [Pattern.INT, Pattern.FLOAT]:
+
+            if self.pattern.values and not value in self.pattern.values:
+                return self.get()
+
+            if not self.pattern.min == None and value < self.pattern.min:
+                return self.get()
+
+            if not self.pattern.max == None and value > self.pattern.max:
+                return self.get()
+
+        if self.pattern.type == Pattern.STR:
+
+            if self.pattern.values and not value in self.pattern.values:
+                return self.get()
+
         self.value = value
+
+        return self.get()
 
     def data(self):
         return self.get()
