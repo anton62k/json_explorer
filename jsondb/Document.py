@@ -56,11 +56,20 @@ class Project(Base):
 
 class Pattern(Base):
 
+    DICT = 'dict'
+    LIST = 'list'
+    DYNAMIC_DICT = 'dynamic_dict'
+    INT = 'int'
+    FLOAT = 'float'
+    STR = 'str'
+
     default_mapper = {
-        'int': 0,
-        'float': 0,
-        'str': ''
+        INT: 0,
+        FLOAT: 0,
+        STR: ''
     }
+
+    list_types = [LIST, DYNAMIC_DICT]
 
     def __init__(self, name='', **kw):
         Base.__init__(self, name, Pattern)
@@ -73,7 +82,7 @@ class Pattern(Base):
             self.parse_kwargs(**kw)
 
     def parse_kwargs(self, **kw):
-        self.type = kw.get('type', 'dict')
+        self.type = kw.get('type', Pattern.DICT)
 
         for key in ['min', 'max', 'default', 'text', 'values', 'option',
                     'items']:
@@ -82,17 +91,17 @@ class Pattern(Base):
         if self.type in self.default_mapper and not self.default:
             self.default = self.default_mapper.get(self.type)
 
-        if self.type in ['list', 'dynamic_dict']:
+        if self.type in Pattern.list_types:
             self.items = Pattern('$items')
 
     def parse_data(self, data):
         f = data.pop('$format')
         self.change_type(f.pop('type'), **f)
 
-        if self.type in ['list', 'dynamic_dict']:
+        if self.type in self.list_types:
             self.items.parse_data(data.pop('$items'))
 
-        elif self.type in ['dict']:
+        elif self.type in Pattern.DICT:
             for field in data:
                 self.add(field, data=data.get(field))
 
@@ -101,11 +110,11 @@ class Pattern(Base):
         self.parse_kwargs(type=value, **kw)
 
     def get(self, name):
-        if self.type == 'dict':
+        if self.type == Pattern.DICT:
             return Base.get(self, name)
 
     def add(self, name, pattern=None, **kw):
-        if self.type == 'dict':
+        if self.type == Pattern.DICT:
             return Base.add(self, name, pattern=pattern or Pattern(), **kw)
 
     def data(self):
@@ -118,7 +127,7 @@ class Pattern(Base):
             if value:
                 f.setdefault(key, value)
 
-        if self.type in ['list', 'dynamic_dict']:
+        if self.type in Pattern.list_types:
             data.setdefault('$items', self.items.data())
 
         return data
@@ -151,7 +160,7 @@ class Field(object):
 
 class Document(Base):
 
-    value_types = ['int', 'float', 'str']
+    value_types = [Pattern.INT, Pattern.FLOAT, Pattern.STR]
 
     def __init__(self, name, **kw):
         Base.__init__(self, name, Document)
@@ -181,5 +190,5 @@ class Document(Base):
                 field.set(sub_data or sub_pattern.default)
 
     def create(self, data):
-        if self.pattern.type == 'dict':
+        if self.pattern.type == Pattern.DICT:
             self.create_dict(data)
