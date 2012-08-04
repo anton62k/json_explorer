@@ -1,6 +1,22 @@
 # coding: utf8
 
 
+class Signal():
+
+    def __init__(self):
+        self.listeners = []
+
+    def add(self, listener):
+        self.listeners.append(listener)
+
+    def remove(self, listener):
+        self.listeners.remove(listener)
+
+    def dispatch(self, *args, **kw):
+        for listener in self.listeners:
+            listener(*args, **kw)
+
+
 class Base(object):
 
     def __init__(self, name, class_item=None, **kw):
@@ -32,6 +48,9 @@ class Base(object):
 
     def remove_all(self):
         self.fields = {}
+
+    def keys(self):
+        return self.fields.keys()
 
     def data(self):
         data = {}
@@ -73,11 +92,12 @@ class Pattern(Base):
 
     def __init__(self, name='', **kw):
         Base.__init__(self, name, Pattern)
-
+        self.signal = Signal()
         data = kw.get('data')
 
         if data:
             self.parse_data(data)
+
         else:
             self.parse_kwargs(**kw)
 
@@ -108,6 +128,7 @@ class Pattern(Base):
     def change_type(self, value, **kw):
         self.remove_all()
         self.parse_kwargs(type=value, **kw)
+        self.signal.dispatch(signal='change', type=value)
 
     def get(self, name):
         if self.type == Pattern.DICT:
@@ -115,7 +136,14 @@ class Pattern(Base):
 
     def add(self, name, pattern=None, **kw):
         if self.type == Pattern.DICT:
-            return Base.add(self, name, pattern=pattern or Pattern(), **kw)
+            p = Base.add(self, name, pattern=pattern or Pattern(), **kw)
+            self.signal.dispatch(signal='add', name=name)
+            return p
+
+    def remove(self, name):
+        p = Base.remove(self, name)
+        self.signal.dispatch(signal='remove', name=name)
+        return p
 
     def data(self):
         data = Base.data(self)
@@ -142,12 +170,21 @@ class Table(Base):
     def add(self, name, data=None):
         return Base.add(self, name, data=data or {}, pattern=self.pattern)
 
+    def update(self):
+        '''
+        Bad method
+        '''
+        for doc in self:
+            self.fields[doc.name] = Document(doc.name, pattern=self.pattern,
+                                             data=doc.data())
+
 
 class Field(object):
 
     def __init__(self, name, **kw):
         self.name = name
         self.pattern = kw.get('pattern')
+        self.value = self.pattern.default
 
     def get(self):
         return self.value
@@ -186,8 +223,12 @@ class Document(Base):
         Base.__init__(self, name, Document)
         self.parse_kwargs(**kw)
 
+    def pattern_signal(self, *args, **kw):
+        print args, kw
+
     def parse_kwargs(self, **kw):
         self.pattern = kw.get('pattern')
+        self.pattern.signal.add(self.pattern_signal)
         self.create(kw.get('data', {}))
 
     def get_class_item(self, name):
