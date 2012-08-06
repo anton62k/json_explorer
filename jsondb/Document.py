@@ -1,6 +1,17 @@
 # coding: utf8
 
 
+def signal(f):
+
+    def w(obj, *args, **kw):
+        rt = f(obj, *args, **kw)
+        if rt:
+            obj.signal.dispatch(signal_name=f.func_name, *args, **kw)
+        return rt
+
+    return w
+
+
 class Signal():
 
     def __init__(self):
@@ -22,6 +33,7 @@ class Base(object):
     def __init__(self, name, class_item=None, **kw):
         self.name = name
         self.fields = {}
+        self.signal = Signal()
         self.class_item = class_item or Base
 
     def get_class_item(self, name):
@@ -36,6 +48,7 @@ class Base(object):
             name = int(name)
         return name
 
+    @signal
     def add(self, name, **kw):
         name = self.parse_name(name)
         return self.get(name) or self.set(name, **kw)
@@ -43,11 +56,14 @@ class Base(object):
     def get(self, name):
         return self.fields.get(name)
 
+    @signal
     def remove(self, name):
         return self.fields.pop(name, None)
 
+    @signal
     def remove_all(self):
-        self.fields = {}
+        self.fields.clear()
+        return True
 
     def keys(self):
         return self.fields.keys()
@@ -92,7 +108,6 @@ class Pattern(Base):
 
     def __init__(self, name='', **kw):
         Base.__init__(self, name, Pattern)
-        self.signal = Signal()
         data = kw.get('data')
 
         if data:
@@ -125,10 +140,11 @@ class Pattern(Base):
             for field in data:
                 self.add(field, data=data.get(field))
 
+    @signal
     def change_type(self, value, **kw):
         self.remove_all()
         self.parse_kwargs(type=value, **kw)
-        self.signal.dispatch(signal='change', type=value)
+        return True
 
     def get(self, name):
         if self.type == Pattern.DICT:
@@ -136,14 +152,10 @@ class Pattern(Base):
 
     def add(self, name, pattern=None, **kw):
         if self.type == Pattern.DICT:
-            p = Base.add(self, name, pattern=pattern or Pattern(), **kw)
-            self.signal.dispatch(signal='add', name=name)
-            return p
+            return Base.add(self, name, pattern=pattern or Pattern(), **kw)
 
     def remove(self, name):
-        p = Base.remove(self, name)
-        self.signal.dispatch(signal='remove', name=name)
-        return p
+        return Base.remove(self, name)
 
     def data(self):
         data = Base.data(self)
@@ -169,14 +181,6 @@ class Table(Base):
 
     def add(self, name, data=None):
         return Base.add(self, name, data=data or {}, pattern=self.pattern)
-
-    def update(self):
-        '''
-        Bad method
-        '''
-        for doc in self:
-            self.fields[doc.name] = Document(doc.name, pattern=self.pattern,
-                                             data=doc.data())
 
 
 class Field(object):
