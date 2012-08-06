@@ -51,7 +51,8 @@ class Base(object):
     @signal
     def add(self, name, **kw):
         name = self.parse_name(name)
-        return self.get(name) or self.set(name, **kw)
+        if not self.get(name):
+            return self.set(name, **kw)
 
     def get(self, name):
         return self.fields.get(name)
