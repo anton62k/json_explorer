@@ -33,10 +33,16 @@ class Base(object):
 
     @signal
     def remove(self, name):
+        item = self.get(name)
+        if not item:
+            return
+        item.close()
         return self.fields.pop(name, None)
 
     @signal
     def remove_all(self):
+        for item in self:
+            item.close()
         self.fields.clear()
         return True
 
@@ -48,6 +54,9 @@ class Base(object):
         for key in self.fields:
             data.setdefault(key, self.fields.get(key).data())
         return data
+    
+    def close(self):
+        self.remove_all()
 
     def __getitem__(self, key):
         if isinstance(key, int):
