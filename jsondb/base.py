@@ -54,7 +54,7 @@ class Base(object):
         for key in self.fields:
             data.setdefault(key, self.fields.get(key).data())
         return data
-    
+
     def close(self):
         self.remove_all()
 
