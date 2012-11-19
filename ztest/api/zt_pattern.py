@@ -2,6 +2,7 @@
 from ztest.test_case import BaseCase
 from jsondb.project import Project
 from jsondb.pattern import Pattern
+from jsondb.document import Document
 
 
 class Test(BaseCase):
@@ -149,3 +150,8 @@ class Test(BaseCase):
 
         self.eq(pattern, first.get('field').pattern)
         self.eq(first.get('field').pattern, second.get('field').pattern)
+
+        # dict
+        pattern = self.table.pattern.add('field_dict', type=Pattern.DICT)
+        self.isinstance(first.get('field_dict'), Document)
+        self.isinstance(second.get('field_dict'), Document)
