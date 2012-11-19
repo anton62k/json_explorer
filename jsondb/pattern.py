@@ -64,9 +64,9 @@ class Pattern(Base):
         if self.type == Pattern.DICT:
             return Base.get(self, name)
 
-    def add(self, name, pattern=None, **kw):
+    def add(self, name, **kw):
         if self.type == Pattern.DICT:
-            return Base.add(self, name, pattern=pattern or Pattern(), **kw)
+            return Base.add(self, name, **kw)
 
     def remove(self, name):
         return Base.remove(self, name)

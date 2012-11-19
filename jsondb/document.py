@@ -48,7 +48,10 @@ class Document(Base):
         self.parse_kwargs(**kw)
 
     def pattern_signal(self, *args, **kw):
-        print args, kw
+        if kw.get('signal_name') == 'add':
+            field_name = args[0]
+            pattern_field = self.pattern.get(field_name)
+            self.add(field_name, pattern=pattern_field)
 
     def parse_kwargs(self, **kw):
         self.pattern = kw.get('pattern')

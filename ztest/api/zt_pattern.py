@@ -135,3 +135,17 @@ class Test(BaseCase):
 
         doc.get('field').set('x')
         self.eq(doc.get('field').get(), 'c')
+
+    def test_signal(self):
+        first = self.table.add(1)
+
+        pattern = self.table.pattern.add('field', type=Pattern.INT, \
+                                         default=12)
+
+        second = self.table.add(2)
+        self.eq(second.get('field').get(), 12)
+
+        self.eq(first.get('field').get(), 12)
+
+        self.eq(pattern, first.get('field').pattern)
+        self.eq(first.get('field').pattern, second.get('field').pattern)
