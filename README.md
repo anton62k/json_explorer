@@ -2,6 +2,7 @@ json_explorer
 =============
 
 TODO:
+* add support json schema (http://json-schema.org/)
 * add pattern type LIST, DYNAMIC_DYCT
 * testing different nested structures
 * testing data() method and 'data' param
