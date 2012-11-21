@@ -12,13 +12,3 @@ class Table(Base):
 
     def add(self, name, data=None):
         return Base.add(self, name, data=data or {}, pattern=self.pattern)
-
-    def remove(self, name):
-        document = Base.remove(self, name)
-        document.close()
-        return document
-
-    def remove_all(self):
-        for document in self:
-            document.close()
-        return Base.remove_all(self)

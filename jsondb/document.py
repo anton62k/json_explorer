@@ -82,6 +82,5 @@ class Document(Base):
             self.create_dict(data)
 
     def close(self):
-        # self.pattern.signal.remove(self.pattern_signal)
-        for doc in self:
-            doc.close()
+        self.pattern.signal.remove(self.pattern_signal)
+        Base.close(self)

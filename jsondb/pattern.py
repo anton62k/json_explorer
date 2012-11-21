@@ -68,9 +68,6 @@ class Pattern(Base):
         if self.type == Pattern.DICT:
             return Base.add(self, name, **kw)
 
-    def remove(self, name):
-        return Base.remove(self, name)
-
     def data(self):
         data = Base.data(self)
         f = data.setdefault('$format', {})
