@@ -14,7 +14,7 @@ class Base(object):
         return self.class_item
 
     def set(self, name, **kw):
-        return self.fields.setdefault((name),
+        return self.fields.setdefault(str(name),
                                       self.get_class_item(name)(name, **kw))
 
     def parse_name(self, name):
