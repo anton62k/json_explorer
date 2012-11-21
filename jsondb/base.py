@@ -14,7 +14,7 @@ class Base(object):
         return self.class_item
 
     def set(self, name, **kw):
-        return self.fields.setdefault(name,
+        return self.fields.setdefault((name),
                                       self.get_class_item(name)(name, **kw))
 
     def parse_name(self, name):
@@ -29,7 +29,7 @@ class Base(object):
             return self.set(name, **kw)
 
     def get(self, name):
-        return self.fields.get(name)
+        return self.fields.get(str(name))
 
     @signal
     def remove(self, name):
@@ -37,7 +37,7 @@ class Base(object):
         if not item:
             return
         item.close()
-        return self.fields.pop(name, None)
+        return self.fields.pop(str(name), None)
 
     @signal
     def remove_all(self):
