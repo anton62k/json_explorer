@@ -58,11 +58,14 @@ class Document(Base):
         self.pattern.signal.add(self.pattern_signal)
         self.create(kw.get('data', {}))
 
-    def get_class_item(self, name):
+    def get_class_item(self, name, **kw):
         pattern_item = self.pattern.get(name)
 
         if pattern_item.type in self.value_types:
             return Field
+
+        if pattern_item.type in [Pattern.LIST, Pattern.DYNAMIC_DICT]:
+            return DocumentItems
 
         return self.class_item
 
@@ -84,3 +87,7 @@ class Document(Base):
     def close(self):
         self.pattern.signal.remove(self.pattern_signal)
         Base.close(self)
+
+
+class DocumentItems(Document):
+    pass

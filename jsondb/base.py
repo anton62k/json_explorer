@@ -10,12 +10,12 @@ class Base(object):
         self.signal = Signal()
         self.class_item = class_item or Base
 
-    def get_class_item(self, name):
+    def get_class_item(self, name, **kw):
         return self.class_item
 
     def set(self, name, **kw):
         return self.fields.setdefault(str(name),
-                                      self.get_class_item(name)(name, **kw))
+                                      self.get_class_item(name, **kw)(name, **kw))
 
     def parse_name(self, name):
         if type(name) is str and name.isdigit():

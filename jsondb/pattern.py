@@ -30,6 +30,11 @@ class Pattern(Base):
         else:
             self.parse_kwargs(**kw)
 
+    def get_class_item(self, name, **kw):
+        if kw.get('type') in self.list_types:
+            return PatternItems
+        return self.class_item
+
     def parse_kwargs(self, **kw):
         self.type = kw.get('type', Pattern.DICT)
 
@@ -83,3 +88,6 @@ class Pattern(Base):
 
         return data
 
+
+class PatternItems(Pattern):
+    pass
