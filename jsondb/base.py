@@ -62,3 +62,6 @@ class Base(object):
         if isinstance(key, int):
             key = sorted(self.fields.keys())[key]
         return self.get(key)
+
+    def length(self):
+        return len(self.keys())
