@@ -5,13 +5,18 @@ from jsondb.signal import signal, Signal
 class Base(object):
 
     def __init__(self, name, class_item=None, **kw):
-        self.name = name
+        self.name = str(name)
         self.fields = {}
         self.signal = Signal()
-        self.class_item = class_item or Base
+        self.class_item = class_item
 
     def get_class_item(self, name, **kw):
-        return self.class_item
+        if self.class_item:
+            return self.class_item
+
+        if kw.get('list', False):
+            return BaseList
+        return Base
 
     def set(self, name, **kw):
         return self.fields.setdefault(str(name),
@@ -41,7 +46,7 @@ class Base(object):
         return True
 
     def keys(self):
-        return self.fields.keys()
+        return sorted(self.fields.keys())
 
     def data(self):
         data = {}
@@ -54,8 +59,39 @@ class Base(object):
 
     def __getitem__(self, key):
         if isinstance(key, int):
-            key = sorted(self.fields.keys())[key]
+            key = self.keys()[key]
         return self.get(key)
 
     def length(self):
         return len(self.keys())
+
+
+class BaseList(Base):
+
+    def data(self):
+        data = []
+        for item in self:
+            data.append(item.data())
+        return data
+
+    def add(self, *args, **kw):
+        name = str(self.length())
+        return self.set(name, **kw)
+
+    def remove(self, index):
+        index = int(index)
+        rt = Base.remove(self, index)
+
+        if not rt:
+            return
+
+        for key in self.keys():
+            current_index = int(key)
+            new_key = str(current_index - 1)
+
+            if current_index > index:
+                item = self.fields.pop(key)
+                item.name = new_key
+                self.fields.setdefault(new_key, item)
+
+        return rt
