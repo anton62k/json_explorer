@@ -27,7 +27,7 @@ class Pattern(Base):
     list_types = [LIST, DYNAMIC_DICT]
 
     def __init__(self, name='', **kw):
-        Base.__init__(self, name, Pattern)
+        Base.__init__(self, name, class_item=Pattern, **kw)
         data = kw.get('data')
 
         if data:

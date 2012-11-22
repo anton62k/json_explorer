@@ -44,14 +44,15 @@ class Document(Base):
     value_types = [Pattern.INT, Pattern.FLOAT, Pattern.STR]
 
     def __init__(self, name, **kw):
-        Base.__init__(self, name, Document)
+        Base.__init__(self, name, class_item=Document, **kw)
         self.parse_kwargs(**kw)
 
     def pattern_signal(self, *args, **kw):
         if kw.get('signal_name') == 'add':
             field_name = args[0]
             pattern_field = self.pattern.get(field_name)
-            self.add(field_name, pattern=pattern_field)
+            self.add(field_name, pattern=pattern_field,
+                     is_list=pattern_field.type == Pattern.LIST)
 
     def parse_kwargs(self, **kw):
         self.pattern = kw.get('pattern')

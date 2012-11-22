@@ -7,8 +7,8 @@ class Project(Base):
 
     root_table_types = [Pattern.DYNAMIC_DICT, Pattern.DICT]
 
-    def __init__(self, name=''):
-        Base.__init__(self, name, Table)
+    def __init__(self, name='', **kw):
+        Base.__init__(self, name, class_item=Table, **kw)
 
     def add(self, name, pattern=None):
         if pattern and not pattern.type in self.root_table_types:

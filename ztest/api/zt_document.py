@@ -29,3 +29,4 @@ class Test(BaseCase):
         self.isinstance(doc.get('field_list'), Document)
         self.eq(doc.get('field_list').pattern.type, Pattern.LIST)
         self.eq(doc.get('field_list').pattern, pattern_list)
+        self.eq(doc.get('field_list').is_list, True)
