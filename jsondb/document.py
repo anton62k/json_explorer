@@ -65,7 +65,7 @@ class Document(Base):
             return Field
 
         if pattern_item.type in [Pattern.LIST, Pattern.DYNAMIC_DICT]:
-            return DocumentItems
+            return DocumentList
 
         return self.class_item
 
@@ -89,5 +89,5 @@ class Document(Base):
         Base.close(self)
 
 
-class DocumentItems(Document):
+class DocumentList(Document):
     pass
