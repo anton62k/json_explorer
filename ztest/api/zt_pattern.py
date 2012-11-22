@@ -1,7 +1,7 @@
 # coding: utf8
 from ztest.test_case import BaseCase
 from jsondb.project import Project
-from jsondb.pattern import Pattern, PatternItems
+from jsondb.pattern import Pattern, PatternListError
 from jsondb.document import Document, DocumentItems
 
 
@@ -156,7 +156,14 @@ class Test(BaseCase):
         self.isinstance(first.get('field_dict'), Document)
         self.isinstance(second.get('field_dict'), Document)
 
-    def test_document_items(self):
+    def test_pattern_items(self):
         pattern = self.table.pattern.add('list', type=Pattern.LIST)
         self.eq(pattern.type, Pattern.LIST)
-        self.isinstance(pattern, PatternItems)
+
+        self.assertRaises(PatternListError, pattern.add, ('test',))
+        self.assertRaises(PatternListError, pattern.get, ('test',))
+        self.assertRaises(PatternListError, pattern.remove, ('test',))
+        self.assertRaises(PatternListError, pattern.remove_all)
+
+        self.isinstance(pattern.items, Pattern)
+        self.eq(pattern.items.type, Pattern.DICT)

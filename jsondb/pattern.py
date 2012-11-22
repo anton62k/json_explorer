@@ -3,6 +3,12 @@ from jsondb.base import Base
 from jsondb.signal import signal
 
 
+class PatternListError(Exception):
+
+    def __init__(self):
+        Exception.__init__(self, 'error method, this pattern is list type')
+
+
 class Pattern(Base):
 
     DICT = 'dict'
@@ -29,11 +35,6 @@ class Pattern(Base):
 
         else:
             self.parse_kwargs(**kw)
-
-    def get_class_item(self, name, **kw):
-        if kw.get('type') in self.list_types:
-            return PatternItems
-        return self.class_item
 
     def parse_kwargs(self, **kw):
         self.type = kw.get('type', Pattern.DICT)
@@ -69,9 +70,20 @@ class Pattern(Base):
         if self.type == Pattern.DICT:
             return Base.get(self, name)
 
+        if self.type in self.list_types:
+            raise PatternListError()
+
     def add(self, name, **kw):
         if self.type == Pattern.DICT:
             return Base.add(self, name, **kw)
+
+        if self.type in self.list_types:
+            raise PatternListError()
+
+    def remove_all(self):
+        if self.type in self.list_types:
+            raise PatternListError()
+        return Base.remove_all(self)
 
     def data(self):
         data = Base.data(self)
@@ -87,7 +99,3 @@ class Pattern(Base):
             data.setdefault('$items', self.items.data())
 
         return data
-
-
-class PatternItems(Pattern):
-    pass
