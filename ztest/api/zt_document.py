@@ -2,7 +2,7 @@
 from ztest.test_case import BaseCase
 from jsondb.pattern import Pattern
 from jsondb.project import Project
-from jsondb.document import Field, DocumentList
+from jsondb.document import Field, Document
 
 
 class Test(BaseCase):
@@ -26,6 +26,6 @@ class Test(BaseCase):
         doc = self.table.add(1)
 
         pattern_list = self.pattern.add('field_list', type=Pattern.LIST)
-        self.isinstance(doc.get('field_list'), DocumentList)
+        self.isinstance(doc.get('field_list'), Document)
         self.eq(doc.get('field_list').pattern.type, Pattern.LIST)
         self.eq(doc.get('field_list').pattern, pattern_list)

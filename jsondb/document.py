@@ -64,9 +64,6 @@ class Document(Base):
         if pattern_item.type in self.value_types:
             return Field
 
-        if pattern_item.type in [Pattern.LIST, Pattern.DYNAMIC_DICT]:
-            return DocumentList
-
         return self.class_item
 
     def create_dict(self, data):
@@ -87,7 +84,3 @@ class Document(Base):
     def close(self):
         self.pattern.signal.remove(self.pattern_signal)
         Base.close(self)
-
-
-class DocumentList(Document):
-    pass
