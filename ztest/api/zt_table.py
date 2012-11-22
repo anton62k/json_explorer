@@ -15,7 +15,7 @@ class TableTest(BaseCase):
 
         doc = self.table.add('1')
         self.isinstance(doc, Document)
-        self.eq(doc.name, 1)
+        self.eq(doc.name, '1')
 
         doc2 = self.table.add('test')
         self.isinstance(doc2, Document)

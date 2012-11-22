@@ -15,16 +15,10 @@ class Base(object):
 
     def set(self, name, **kw):
         return self.fields.setdefault(str(name),
-                                      self.get_class_item(name, **kw)(name, **kw))
-
-    def parse_name(self, name):
-        if type(name) is str and name.isdigit():
-            name = int(name)
-        return name
+                                self.get_class_item(name, **kw)(name, **kw))
 
     @signal
     def add(self, name, **kw):
-        name = self.parse_name(name)
         if not self.get(name):
             return self.set(name, **kw)
 

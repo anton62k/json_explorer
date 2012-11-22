@@ -2,7 +2,7 @@
 from ztest.test_case import BaseCase
 from jsondb.project import Project
 from jsondb.pattern import Pattern, PatternListError
-from jsondb.document import Document, DocumentItems
+from jsondb.document import Document
 
 
 class Test(BaseCase):
