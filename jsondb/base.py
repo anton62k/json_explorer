@@ -4,31 +4,40 @@ from jsondb.signal import signal, Signal
 
 class Base(object):
 
-    def __init__(self, name, class_item=None, **kw):
+    def __init__(self, name, class_item=None, is_list=False, ** kw):
         self.name = str(name)
+        self.is_list = is_list
         self.fields = {}
         self.signal = Signal()
-        self.class_item = class_item
+        self.class_item = class_item or Base
 
     def get_class_item(self, name, **kw):
-        if self.class_item:
-            return self.class_item
-
-        if kw.get('list', False):
-            return BaseList
-        return Base
+        return self.class_item
 
     def set(self, name, **kw):
         return self.fields.setdefault(str(name),
                                 self.get_class_item(name, **kw)(name, **kw))
 
     @signal
-    def add(self, name, **kw):
-        if not self.get(name):
-            return self.set(name, **kw)
+    def add(self, name=None, **kw):
+        if self.is_list:
+            name = str(self.length())
+        elif self.get(name):
+            return
+        return self.set(name, **kw)
 
     def get(self, name):
         return self.fields.get(str(name))
+
+    def remove_in_list(self, index):
+        for key in self.keys():
+            current_index = int(key)
+            new_key = str(current_index - 1)
+
+            if current_index > index:
+                item = self.fields.pop(key)
+                item.name = new_key
+                self.fields.setdefault(new_key, item)
 
     @signal
     def remove(self, name):
@@ -36,7 +45,10 @@ class Base(object):
         if not item:
             return
         item.close()
-        return self.fields.pop(str(name), None)
+        rt = self.fields.pop(str(name), None)
+        if self.is_list:
+            self.remove_in_list(int(name))
+        return rt
 
     @signal
     def remove_all(self):
@@ -49,9 +61,13 @@ class Base(object):
         return sorted(self.fields.keys())
 
     def data(self):
-        data = {}
-        for key in self.fields:
-            data.setdefault(key, self.fields.get(key).data())
+        data = [] if self.is_list else {}
+
+        for item in self:
+            if self.is_list:
+                data.append(item.data())
+            else:
+                data.setdefault(item.name, item.data())
         return data
 
     def close(self):
@@ -64,34 +80,3 @@ class Base(object):
 
     def length(self):
         return len(self.keys())
-
-
-class BaseList(Base):
-
-    def data(self):
-        data = []
-        for item in self:
-            data.append(item.data())
-        return data
-
-    def add(self, *args, **kw):
-        name = str(self.length())
-        return self.set(name, **kw)
-
-    def remove(self, index):
-        index = int(index)
-        rt = Base.remove(self, index)
-
-        if not rt:
-            return
-
-        for key in self.keys():
-            current_index = int(key)
-            new_key = str(current_index - 1)
-
-            if current_index > index:
-                item = self.fields.pop(key)
-                item.name = new_key
-                self.fields.setdefault(new_key, item)
-
-        return rt

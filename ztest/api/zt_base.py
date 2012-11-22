@@ -1,6 +1,6 @@
 # coding: utf8
 from ztest.test_case import BaseCase
-from jsondb.base import Base, BaseList
+from jsondb.base import Base
 
 
 class Test(BaseCase):
@@ -80,15 +80,14 @@ class Test(BaseCase):
         self.base.add(2)
         self.eq(self.base.data(), {'1': {}, '2': {}})
 
-        item_list = self.base.add(3, list=True)
-        self.isinstance(item_list, BaseList)
+        item_list = self.base.add(3, is_list=True)
         self.eq(item_list.data(), [])
         self.eq(self.base.data(), {'1': {}, '2': {}, '3': []})
 
     def test_nested_list_data(self):
         self.base.add(1)
-        l = self.base.add('d', list=True)
-        ll = l.add(list=True)
+        l = self.base.add('d', is_list=True)
+        ll = l.add(is_list=True)
         lll = ll.add()
         lll.add('sub1')
         lll.add('sub2')
@@ -96,27 +95,24 @@ class Test(BaseCase):
         item2 = l.add()
         item1.add('item1')
         item2.add('item2')
-
-        print self.base.data()
+        self.eq(self.base.data(), {'1': {}, 'd': [[{'sub1': {}, \
+                            'sub2': {}}], {'item1':{}}, {'item2':{}}]})
 
     def test_list(self):
-        base_list = self.base.add(1, list=True)
+        base_list = self.base.add(1, is_list=True)
         self.eq(base_list.name, '1')
-        self.isinstance(base_list, BaseList)
 
         item0 = base_list.add()
         self.eq(base_list.length(), 1)
         self.eq(item0.name, '0')
         self.eq(base_list.get('0'), item0)
         self.eq(base_list.get(0), item0)
-        self.isinstance(item0, Base)
 
         item1 = base_list.add(list=True)
         self.eq(base_list.length(), 2)
         self.eq(item1.name, '1')
         self.eq(base_list.get('1'), item1)
         self.eq(base_list.get(1), item1)
-        self.isinstance(item1, BaseList)
 
         base_list.remove_all()
         self.eq(base_list.length(), 0)
