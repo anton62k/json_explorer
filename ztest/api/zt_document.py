@@ -72,3 +72,32 @@ class Test(BaseCase):
         #
         new_doc = self.table.add(2, data=doc.data())
         self.eq(new_doc.data(), doc.data())
+
+    def test_add_signal(self):
+        self.create_pattern()
+
+        doc = self.table.add(1)
+
+        self.pattern.add('price', type=Pattern.DICT)
+        self.pattern.get('price').add('type', type=Pattern.STR, default='type')
+        self.pattern.get('price').add('value', type=Pattern.INT, default=100)
+        self.eq(doc.get('price').data(), {'type': 'type', 'value': 100})
+
+        self.pattern.add('list', type=Pattern.LIST, item_type=Pattern.LIST)
+        self.pattern.get('list').items.items.add('param', type=Pattern.STR, default='test')
+        self.pattern.get('list').items.items.add('include_list', type=Pattern.LIST)
+        self.eq(doc.get('list').is_list, True)
+        self.eq(doc.get('list').pattern.type, Pattern.LIST)
+        self.eq(doc.get('list').pattern.items.type, Pattern.LIST)
+        self.eq(doc.get('list').pattern.items.items.type, Pattern.DICT)
+        self.eq(doc.get('list').pattern.items.items.get('param').type, Pattern.STR)
+        self.eq(doc.get('list').pattern.items.items.get('include_list').type, Pattern.LIST)
+        self.eq(doc.get('list').pattern.items.items.get('include_list').items.type, Pattern.DICT)
+
+        doc.get('list').add()
+        self.eq(doc.get('list').get(0).is_list, True)
+        self.eq(doc.get('list').data(), [[]])
+
+        doc.get('list').get(0).add()
+        doc.get('list').get(0).get(0).get('include_list').add()
+        self.eq(doc.get('list').data(), [[{'param':'test', 'include_list':[{}]}]])

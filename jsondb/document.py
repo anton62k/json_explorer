@@ -44,6 +44,8 @@ class Document(Base):
     value_types = [Pattern.INT, Pattern.FLOAT, Pattern.STR]
 
     def __init__(self, name, **kw):
+        is_list = kw.get('pattern').type == Pattern.LIST
+        kw.setdefault('is_list', is_list)
         Base.__init__(self, name, class_item=Document, **kw)
         self.parse_kwargs(**kw)
 
@@ -57,8 +59,7 @@ class Document(Base):
         if kw.get('signal_name') == 'add':
             field_name = args[0]
             pattern_field = self.pattern.get(field_name)
-            self.add(field_name, pattern=pattern_field,
-                     is_list=pattern_field.type == Pattern.LIST)
+            self.add(field_name, pattern=pattern_field)
 
     def parse_kwargs(self, **kw):
         self.pattern = kw.get('pattern')
@@ -78,9 +79,8 @@ class Document(Base):
         return self.class_item
 
     def add_item(self, pattern, sub_data):
-        is_list = pattern.type == Pattern.LIST
         doc = self.add(pattern.name, pattern=pattern,
-                         data=sub_data, is_list=is_list)
+                         data=sub_data)
 
         if pattern.type in self.value_types:
             field = doc
