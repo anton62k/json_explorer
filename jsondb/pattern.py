@@ -3,10 +3,10 @@ from jsondb.base import Base
 from jsondb.signal import signal
 
 
-class PatternListError(Exception):
+class PatternError(Exception):
 
     def __init__(self):
-        Exception.__init__(self, 'error method, this pattern is list type')
+        Exception.__init__(self, 'error method, this pattern is bad type')
 
 
 class Pattern(Base):
@@ -69,21 +69,20 @@ class Pattern(Base):
     def get(self, name):
         if self.type == Pattern.DICT:
             return Base.get(self, name)
-
-        if self.type in self.list_types:
-            raise PatternListError()
+        else:
+            raise PatternError()
 
     def add(self, name, **kw):
         if self.type == Pattern.DICT:
             return Base.add(self, name, **kw)
-
-        if self.type in self.list_types:
-            raise PatternListError()
+        else:
+            raise PatternError()
 
     def remove_all(self):
-        if self.type in self.list_types:
-            raise PatternListError()
-        return Base.remove_all(self)
+        if self.type == Pattern.DICT:
+            return Base.remove_all(self)
+        else:
+            raise PatternError()
 
     def data(self):
         data = Base.data(self)

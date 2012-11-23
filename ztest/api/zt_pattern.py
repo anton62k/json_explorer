@@ -1,7 +1,7 @@
 # coding: utf8
 from ztest.test_case import BaseCase
 from jsondb.project import Project
-from jsondb.pattern import Pattern, PatternListError
+from jsondb.pattern import Pattern, PatternError
 from jsondb.document import Document
 
 
@@ -160,10 +160,40 @@ class Test(BaseCase):
         pattern = self.table.pattern.add('list', type=Pattern.LIST)
         self.eq(pattern.type, Pattern.LIST)
 
-        self.assertRaises(PatternListError, pattern.add, ('test',))
-        self.assertRaises(PatternListError, pattern.get, ('test',))
-        self.assertRaises(PatternListError, pattern.remove, ('test',))
-        self.assertRaises(PatternListError, pattern.remove_all)
+        self.assertRaises(PatternError, pattern.add, ('test',))
+        self.assertRaises(PatternError, pattern.get, ('test',))
+        self.assertRaises(PatternError, pattern.remove, ('test',))
+        self.assertRaises(PatternError, pattern.remove_all)
 
         self.isinstance(pattern.items, Pattern)
         self.eq(pattern.items.type, Pattern.DICT)
+
+    def test_add_pattern_int(self):
+        pattern = self.table.pattern.add('pattern', type=Pattern.INT)
+
+        self.eq(pattern.type, Pattern.INT)
+
+        self.assertRaises(PatternError, pattern.add, ('test',))
+        self.assertRaises(PatternError, pattern.get, ('test',))
+        self.assertRaises(PatternError, pattern.remove, ('test',))
+        self.assertRaises(PatternError, pattern.remove_all)
+
+    def test_add_pattern_float(self):
+        pattern = self.table.pattern.add('pattern', type=Pattern.FLOAT)
+
+        self.eq(pattern.type, Pattern.FLOAT)
+
+        self.assertRaises(PatternError, pattern.add, ('test',))
+        self.assertRaises(PatternError, pattern.get, ('test',))
+        self.assertRaises(PatternError, pattern.remove, ('test',))
+        self.assertRaises(PatternError, pattern.remove_all)
+
+    def test_add_pattern_str(self):
+        pattern = self.table.pattern.add('pattern', type=Pattern.STR)
+
+        self.eq(pattern.type, Pattern.STR)
+
+        self.assertRaises(PatternError, pattern.add, ('test',))
+        self.assertRaises(PatternError, pattern.get, ('test',))
+        self.assertRaises(PatternError, pattern.remove, ('test',))
+        self.assertRaises(PatternError, pattern.remove_all)
