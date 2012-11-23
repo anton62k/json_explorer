@@ -47,11 +47,10 @@ class Document(Base):
     value_types = [Pattern.INT, Pattern.FLOAT, Pattern.STR]
 
     def __init__(self, name, **kw):
-        type_list = None
-        pattern = kw.get('pattern')
-        if pattern.type in Pattern.list_types:
-            type_list = pattern.type
+        type_list = kw.get('pattern').type if kw.get('pattern').type in \
+                                                Pattern.list_types else None
         kw.setdefault('type_list', type_list)
+
         Base.__init__(self, name, class_item=Document, **kw)
         self.parse_kwargs(**kw)
 

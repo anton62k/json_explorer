@@ -23,9 +23,9 @@ class Base(object):
 
     @signal
     def add(self, name=None, **kw):
-        if self.type_list:
+        if self.type_list == 'list':
             name = str(self.length())
-        elif self.get(name):
+        elif not name or self.get(name):
             return
         return self.set(name, **kw)
 
@@ -49,7 +49,7 @@ class Base(object):
             return
         item.close()
         rt = self.fields.pop(self.parse_name(name), None)
-        if self.type_list:
+        if self.type_list == 'list':
             self.update_list(int(name))
         return rt
 
