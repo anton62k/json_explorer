@@ -52,10 +52,6 @@ class ProjectTest(BaseCase):
         self.eq(self.project.fields, {})
 
     def test_add_table_with_pattern(self):
-        pattern = Pattern()
-        pattern.type = Pattern.DYNAMIC_DICT
+        table = self.project.add(self.table_name, type=Pattern.DYNAMIC_DICT)
 
-        table = self.project.add(self.table_name, pattern=pattern)
-
-        self.eq(table.pattern, pattern)
         self.eq(table.pattern.type, Pattern.DYNAMIC_DICT)

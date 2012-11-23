@@ -10,8 +10,8 @@ class Project(Base):
     def __init__(self, name='', **kw):
         Base.__init__(self, name, class_item=Table, **kw)
 
-    def add(self, name, pattern=None):
-        if pattern and not pattern.type in self.root_table_types:
-            pass  # TODO сделать проверку
+    def add(self, name, **kw):
+        # if pattern and not pattern.type in self.root_table_types:
+        #    pass  # TODO сделать проверку
 
-        return Base.add(self, name, pattern=pattern or Pattern())
+        return Base.add(self, name, pattern=Pattern(**kw))
