@@ -47,8 +47,11 @@ class Document(Base):
     value_types = [Pattern.INT, Pattern.FLOAT, Pattern.STR]
 
     def __init__(self, name, **kw):
-        is_list = kw.get('pattern').type == Pattern.LIST
-        kw.setdefault('is_list', is_list)
+        type_list = None
+        pattern = kw.get('pattern')
+        if pattern.type in Pattern.list_types:
+            type_list = pattern.type
+        kw.setdefault('type_list', type_list)
         Base.__init__(self, name, class_item=Document, **kw)
         self.parse_kwargs(**kw)
 
@@ -78,7 +81,7 @@ class Document(Base):
         self.parse_data(kw.get('data', {}))
 
     def get_pattern_item(self, name=None, **kw):
-        return self.pattern.get(name) if not self.is_list else \
+        return self.pattern.get(name) if not self.type_list else \
                                                         self.pattern.items
 
     def get_class_item(self, name=None, **kw):
@@ -98,7 +101,7 @@ class Document(Base):
             field.set(sub_data or pattern.default)
 
     def parse_data(self, data):
-        if self.is_list:
+        if self.type_list:
             pattern = self.pattern.items
             for sub_data in data:
                 self.add_item(pattern, sub_data)

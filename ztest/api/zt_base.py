@@ -80,14 +80,14 @@ class Test(BaseCase):
         self.base.add(2)
         self.eq(self.base.data(), {'1': {}, '2': {}})
 
-        item_list = self.base.add(3, is_list=True)
+        item_list = self.base.add(3, type_list='list')
         self.eq(item_list.data(), [])
         self.eq(self.base.data(), {'1': {}, '2': {}, '3': []})
 
     def test_nested_list_data(self):
         self.base.add(1)
-        l = self.base.add('d', is_list=True)
-        ll = l.add(is_list=True)
+        l = self.base.add('d', type_list='list')
+        ll = l.add(type_list='list')
         lll = ll.add()
         lll.add('sub1')
         lll.add('sub2')
@@ -99,7 +99,7 @@ class Test(BaseCase):
                             'sub2': {}}], {'item1':{}}, {'item2':{}}]})
 
     def test_list(self):
-        base_list = self.base.add(1, is_list=True)
+        base_list = self.base.add(1, type_list='list')
         self.eq(base_list.name, '1')
 
         item0 = base_list.add()

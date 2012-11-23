@@ -4,9 +4,9 @@ from jsondb.signal import signal, Signal
 
 class Base(object):
 
-    def __init__(self, name='', class_item=None, is_list=False, ** kw):
+    def __init__(self, name='', class_item=None, type_list=None, ** kw):
         self.name = self.parse_name(name)
-        self.is_list = is_list
+        self.type_list = type_list
         self.fields = {}
         self.signal = Signal()
         self.class_item = class_item or Base
@@ -23,7 +23,7 @@ class Base(object):
 
     @signal
     def add(self, name=None, **kw):
-        if self.is_list:
+        if self.type_list:
             name = str(self.length())
         elif self.get(name):
             return
@@ -49,7 +49,7 @@ class Base(object):
             return
         item.close()
         rt = self.fields.pop(self.parse_name(name), None)
-        if self.is_list:
+        if self.type_list:
             self.update_list(int(name))
         return rt
 
@@ -64,10 +64,10 @@ class Base(object):
         return sorted(self.fields.keys())
 
     def data(self):
-        data = [] if self.is_list else {}
+        data = [] if self.type_list == 'list' else {}
 
         for item in self:
-            if self.is_list:
+            if self.type_list == 'list':
                 data.append(item.data())
             else:
                 data.setdefault(item.name, item.data())

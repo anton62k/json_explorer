@@ -29,7 +29,7 @@ class Test(BaseCase):
         self.isinstance(doc.get('field_list'), Document)
         self.eq(doc.get('field_list').pattern.type, Pattern.LIST)
         self.eq(doc.get('field_list').pattern, pattern_list)
-        self.eq(doc.get('field_list').is_list, True)
+        self.eq(doc.get('field_list').type_list, 'list')
 
     def create_pattern(self):
         self.pattern.add('text', type=Pattern.DICT)
@@ -87,7 +87,7 @@ class Test(BaseCase):
         self.pattern.add('list', type=Pattern.LIST, item_type=Pattern.LIST)
         self.pattern.get('list').items.items.add('param', type=Pattern.STR, default='test')
         self.pattern.get('list').items.items.add('include_list', type=Pattern.LIST)
-        self.eq(doc.get('list').is_list, True)
+        self.eq(doc.get('list').type_list, 'list')
         self.eq(doc.get('list').pattern.type, Pattern.LIST)
         self.eq(doc.get('list').pattern.items.type, Pattern.LIST)
         self.eq(doc.get('list').pattern.items.items.type, Pattern.DICT)
@@ -96,7 +96,7 @@ class Test(BaseCase):
         self.eq(doc.get('list').pattern.items.items.get('include_list').items.type, Pattern.DICT)
 
         doc.get('list').add()
-        self.eq(doc.get('list').get(0).is_list, True)
+        self.eq(doc.get('list').get(0).type_list, 'list')
         self.eq(doc.get('list').data(), [[]])
 
         doc.get('list').get(0).add()
