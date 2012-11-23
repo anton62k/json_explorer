@@ -10,6 +10,7 @@ class Test(BaseCase):
     def setUp(self):
         self.project = Project()
         self.table = self.project.add('test')
+        self.pattern = self.table.pattern
 
     def test_int(self):
         pattern_int = self.table.pattern.add('field_int', type=Pattern.INT, \
@@ -161,9 +162,6 @@ class Test(BaseCase):
         self.eq(pattern.type, Pattern.LIST)
 
         self.assertRaises(PatternError, pattern.add, ('test',))
-        self.assertRaises(PatternError, pattern.get, ('test',))
-        self.assertRaises(PatternError, pattern.remove, ('test',))
-        self.assertRaises(PatternError, pattern.remove_all)
 
         self.isinstance(pattern.items, Pattern)
         self.eq(pattern.items.type, Pattern.DICT)
@@ -174,9 +172,6 @@ class Test(BaseCase):
         self.eq(pattern.type, Pattern.INT)
 
         self.assertRaises(PatternError, pattern.add, ('test',))
-        self.assertRaises(PatternError, pattern.get, ('test',))
-        self.assertRaises(PatternError, pattern.remove, ('test',))
-        self.assertRaises(PatternError, pattern.remove_all)
 
     def test_add_pattern_float(self):
         pattern = self.table.pattern.add('pattern', type=Pattern.FLOAT)
@@ -184,9 +179,6 @@ class Test(BaseCase):
         self.eq(pattern.type, Pattern.FLOAT)
 
         self.assertRaises(PatternError, pattern.add, ('test',))
-        self.assertRaises(PatternError, pattern.get, ('test',))
-        self.assertRaises(PatternError, pattern.remove, ('test',))
-        self.assertRaises(PatternError, pattern.remove_all)
 
     def test_add_pattern_str(self):
         pattern = self.table.pattern.add('pattern', type=Pattern.STR)
@@ -194,6 +186,117 @@ class Test(BaseCase):
         self.eq(pattern.type, Pattern.STR)
 
         self.assertRaises(PatternError, pattern.add, ('test',))
-        self.assertRaises(PatternError, pattern.get, ('test',))
-        self.assertRaises(PatternError, pattern.remove, ('test',))
-        self.assertRaises(PatternError, pattern.remove_all)
+
+    def get_data_schema(self):
+        return {
+            "text": {
+                "ru": {
+                    "$format": {
+                        "type": "dict"
+                    },
+                    "title": {
+                        "$format": {
+                            "default": "русский заголовок",
+                            "type": "str"
+                        }
+                    }
+                },
+                "$format": {
+                    "type": "dict"
+                },
+                "eng": {
+                    "$format": {
+                        "type": "dict"
+                    },
+                    "title": {
+                        "$format": {
+                            "default": "english title",
+                            "type": "str"
+                        }
+                    }
+                }
+            },
+            "$format": {
+                "type": "dict"
+            },
+            "gift": {
+                "$format": {
+                    "type": "list"
+                },
+                "$items": {
+                    "$format": {
+                        "type": "dict"
+                    },
+                    "type": {
+                        "$format": {
+                            "default": "coins",
+                            "type": "str",
+                            "values": [
+                                "coins",
+                                "coins_gold"
+                            ]
+                        }
+                    },
+                    "value": {
+                        "$format": {
+                            "type": "list"
+                        },
+                        "$items": {
+                            "$format": {
+                                "default": 12,
+                                "type": "int"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    def test_get_data(self):
+        # get data
+        self.pattern.add('text', type=Pattern.DICT)
+        self.pattern.get('text').add('ru', type=Pattern.DICT)
+        self.pattern.get('text').get('ru').add('title', type=Pattern.STR,
+                                               default='русский заголовок')
+        self.pattern.get('text').add('eng', type=Pattern.DICT)
+        self.pattern.get('text').get('eng').add('title', type=Pattern.STR,
+                                                default='english title')
+
+        self.pattern.add('gift', type=Pattern.LIST)
+        self.pattern.get('gift').items.add('type', type=Pattern.STR,
+                               values=['coins', 'coins_gold'], default='coins')
+        self.pattern.get('gift').items.add('value', type=Pattern.LIST,
+                                           item_type=Pattern.INT)
+        self.pattern.get('gift').items.get('value').items.default = 12
+
+        self.eq(self.pattern.data(), self.get_data_schema())
+
+        # set data
+        self.pattern.remove_all()
+        self.eq(self.pattern.data(), {'$format': {'type': 'dict'}})
+        self.pattern.parse_data(self.get_data_schema())
+        self.eq(self.pattern.data(), self.get_data_schema())
+
+        self.eq(self.pattern.get('text').type, Pattern.DICT)
+        self.eq(self.pattern.get('text').get('ru').type, Pattern.DICT)
+        self.eq(self.pattern.get('text').get('eng').type, Pattern.DICT)
+        self.eq(self.pattern.get('text').get('ru').get('title').type,
+                                                                Pattern.STR)
+        self.eq(self.pattern.get('text').get('ru').get('title').default,
+                                                        'русский заголовок')
+        self.eq(self.pattern.get('text').get('eng').type, Pattern.DICT)
+        self.eq(self.pattern.get('text').get('eng').get('title').default,
+                                                            'english title')
+
+        self.eq(self.pattern.get('gift').type, Pattern.LIST)
+        self.eq(self.pattern.get('gift').items.type, Pattern.DICT)
+        self.eq(self.pattern.get('gift').items.get('type').type, Pattern.STR)
+        self.eq(self.pattern.get('gift').items.get('type').default, 'coins')
+        self.eq(self.pattern.get('gift').items.get('type').values,
+                                                    ['coins', 'coins_gold'])
+        self.eq(self.pattern.get('gift').items.get('value').type, Pattern.LIST)
+        self.eq(self.pattern.get('gift').items.get('value').items.type,
+                                                                Pattern.INT)
+        self.eq(self.pattern.get('gift').items.get('value').items.default, 12)
+
+

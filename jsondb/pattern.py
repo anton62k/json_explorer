@@ -47,7 +47,8 @@ class Pattern(Base):
             self.default = self.default_mapper.get(self.type)
 
         if self.type in Pattern.list_types:
-            self.items = Pattern('$items')
+            self.items = Pattern('$items',
+                                 type=kw.get('item_type', Pattern.DICT))
 
     def parse_data(self, data):
         f = data.pop('$format')
@@ -66,21 +67,9 @@ class Pattern(Base):
         self.parse_kwargs(type=value, **kw)
         return True
 
-    def get(self, name):
-        if self.type == Pattern.DICT:
-            return Base.get(self, name)
-        else:
-            raise PatternError()
-
     def add(self, name, **kw):
         if self.type == Pattern.DICT:
             return Base.add(self, name, **kw)
-        else:
-            raise PatternError()
-
-    def remove_all(self):
-        if self.type == Pattern.DICT:
-            return Base.remove_all(self)
         else:
             raise PatternError()
 
