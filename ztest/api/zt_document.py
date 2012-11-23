@@ -114,3 +114,8 @@ class Test(BaseCase):
         self.eq(doc.get('list').data(), [[]])
         doc.get('list').get(0).add()
         self.eq(doc.get('list').data(), [[45]])
+
+        self.pattern.get('list').change_type_item(Pattern.DICT)
+        self.eq(doc.get('list').data(), [])
+        doc.get('list').add()
+        self.eq(doc.get('list').data(), [{}])
