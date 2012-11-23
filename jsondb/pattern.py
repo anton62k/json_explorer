@@ -52,7 +52,8 @@ class Pattern(Base):
 
     def parse_data(self, data):
         f = data.pop('$format')
-        self.change_type(f.pop('type'), **f)
+        self.remove_all()
+        self.parse_kwargs(type=f.pop('type'), **f)
 
         if self.type in self.list_types:
             self.items.parse_data(data.pop('$items'))
