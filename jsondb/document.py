@@ -68,30 +68,24 @@ class Document(Base):
 
         return self.class_item
 
-    def parse_data(self, data):
+    def add_item(self, pattern, sub_data):
+        is_list = pattern.type == Pattern.LIST
+        doc = self.add(pattern.name, pattern=pattern,
+                         data=sub_data, is_list=is_list)
 
+        if pattern.type in self.value_types:
+            field = doc
+            field.set(sub_data or pattern.default)
+
+    def parse_data(self, data):
         if self.is_list:
             pattern = self.pattern.items
             for sub_data in data:
-                is_list = pattern.type == Pattern.LIST
-                doc = self.add(pattern=pattern,
-                         data=sub_data, is_list=is_list)
-
-                if pattern.type in self.value_types:
-                    field = doc
-                    field.set(sub_data or pattern.default)
-
-            return
-
-        for pattern in self.pattern:
-            sub_data = data.get(pattern.name, {})
-            is_list = pattern.type == Pattern.LIST
-            doc = self.add(pattern.name, pattern=pattern,
-                             data=sub_data, is_list=is_list)
-
-            if pattern.type in self.value_types:
-                field = doc
-                field.set(sub_data or pattern.default)
+                self.add_item(pattern, sub_data)
+        else:
+            for pattern in self.pattern:
+                sub_data = data.get(pattern.name, {})
+                self.add_item(pattern, sub_data)
 
     def close(self):
         self.pattern.signal.remove(self.pattern_signal)
