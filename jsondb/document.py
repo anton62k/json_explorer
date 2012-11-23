@@ -38,6 +38,9 @@ class Field(object):
     def data(self):
         return self.get()
 
+    def close(self):
+        pass
+
 
 class Document(Base):
 
@@ -56,10 +59,18 @@ class Document(Base):
         return Base.add(self, name=name, **kw)
 
     def pattern_signal(self, *args, **kw):
-        if kw.get('signal_name') == 'add':
+        signal_name = kw.get('signal_name')
+        if signal_name == 'add':
             field_name = args[0]
             pattern_field = self.pattern.get(field_name)
             self.add(field_name, pattern=pattern_field)
+
+        elif signal_name == 'remove':
+            field_name = args[0]
+            self.remove(field_name)
+
+        elif signal_name == 'change_type_item':
+            self.remove_all()
 
     def parse_kwargs(self, **kw):
         self.pattern = kw.get('pattern')

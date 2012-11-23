@@ -62,9 +62,10 @@ class Pattern(Base):
                 self.add(field, data=data.get(field))
 
     @signal
-    def change_type(self, value, **kw):
-        self.remove_all()
-        self.parse_kwargs(type=value, **kw)
+    def change_type_item(self, value, **kw):
+        if not self.type in self.list_types:
+            raise PatternError()
+        self.items = Pattern('$items', type=value, **kw)
         return True
 
     def add(self, name, **kw):

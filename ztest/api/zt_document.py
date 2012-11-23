@@ -73,11 +73,12 @@ class Test(BaseCase):
         new_doc = self.table.add(2, data=doc.data())
         self.eq(new_doc.data(), doc.data())
 
-    def test_add_signal(self):
+    def test_signals(self):
         self.create_pattern()
 
         doc = self.table.add(1)
 
+        # add signal
         self.pattern.add('price', type=Pattern.DICT)
         self.pattern.get('price').add('type', type=Pattern.STR, default='type')
         self.pattern.get('price').add('value', type=Pattern.INT, default=100)
@@ -101,3 +102,15 @@ class Test(BaseCase):
         doc.get('list').get(0).add()
         doc.get('list').get(0).get(0).get('include_list').add()
         self.eq(doc.get('list').data(), [[{'param':'test', 'include_list':[{}]}]])
+
+        # remove and change_type_item signal
+        self.pattern.get('list').items.items.remove('include_list')
+        self.eq(doc.get('list').data(), [[{'param':'test'}]])
+
+        self.pattern.get('list').items.items.remove('param')
+        self.eq(doc.get('list').data(), [[{}]])
+
+        self.pattern.get('list').items.change_type_item(Pattern.INT, default=45)
+        self.eq(doc.get('list').data(), [[]])
+        doc.get('list').get(0).add()
+        self.eq(doc.get('list').data(), [[45]])
