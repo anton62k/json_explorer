@@ -62,3 +62,13 @@ class Test(BaseCase):
                                     {'type':'coins_gold', 'value':[1, 34]}]})
         self.eq(doc.get('text').get('ru').get('title').get(), 'test value')
         self.eq(doc.get('text').get('eng').get('title').get(), 'sample')
+
+        #
+        gift = doc.get('gift').add(data=\
+                                {'type': 'coins_gold', 'value': [5, 4, 67, '']})
+        self.eq(gift.data(), {'type': 'coins_gold', 'value': [5, 4, 67, 12]})
+        self.eq(doc.get('gift').length(), 3)
+
+        #
+        new_doc = self.table.add(2, data=doc.data())
+        self.eq(new_doc.data(), doc.data())

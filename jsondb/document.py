@@ -47,6 +47,12 @@ class Document(Base):
         Base.__init__(self, name, class_item=Document, **kw)
         self.parse_kwargs(**kw)
 
+    def add(self, name=None, **kw):
+        if not kw.get('pattern'):
+            kw.setdefault('pattern', self.get_pattern_item(name))
+
+        return Base.add(self, name=name, **kw)
+
     def pattern_signal(self, *args, **kw):
         if kw.get('signal_name') == 'add':
             field_name = args[0]
@@ -59,9 +65,12 @@ class Document(Base):
         self.pattern.signal.add(self.pattern_signal)
         self.parse_data(kw.get('data', {}))
 
-    def get_class_item(self, name=None, **kw):
-        pattern = self.pattern.get(name) if not self.is_list else \
+    def get_pattern_item(self, name=None, **kw):
+        return self.pattern.get(name) if not self.is_list else \
                                                         self.pattern.items
+
+    def get_class_item(self, name=None, **kw):
+        pattern = self.get_pattern_item(name, **kw)
 
         if pattern.type in self.value_types:
             return Field
