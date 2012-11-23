@@ -57,30 +57,41 @@ class Document(Base):
     def parse_kwargs(self, **kw):
         self.pattern = kw.get('pattern')
         self.pattern.signal.add(self.pattern_signal)
-        self.create(kw.get('data', {}))
+        self.parse_data(kw.get('data', {}))
 
-    def get_class_item(self, name, **kw):
-        pattern_item = self.pattern.get(name)
+    def get_class_item(self, name=None, **kw):
+        pattern = self.pattern.get(name) if not self.is_list else \
+                                                        self.pattern.items
 
-        if pattern_item.type in self.value_types:
+        if pattern.type in self.value_types:
             return Field
 
         return self.class_item
 
-    def create_dict(self, data):
-        for sub_pattern in self.pattern:
+    def parse_data(self, data):
 
-            sub_data = data.get(sub_pattern.name, None)
+        if self.is_list:
+            pattern = self.pattern.items
+            for sub_data in data:
+                is_list = pattern.type == Pattern.LIST
+                doc = self.add(pattern=pattern,
+                         data=sub_data, is_list=is_list)
 
-            field = self.add(sub_pattern.name, pattern=sub_pattern,
-                             data=sub_data)
+                if pattern.type in self.value_types:
+                    field = doc
+                    field.set(sub_data or pattern.default)
 
-            if sub_pattern.type in self.value_types:
-                field.set(sub_data or sub_pattern.default)
+            return
 
-    def create(self, data):
-        if self.pattern.type == Pattern.DICT:
-            self.create_dict(data)
+        for pattern in self.pattern:
+            sub_data = data.get(pattern.name, {})
+            is_list = pattern.type == Pattern.LIST
+            doc = self.add(pattern.name, pattern=pattern,
+                             data=sub_data, is_list=is_list)
+
+            if pattern.type in self.value_types:
+                field = doc
+                field.set(sub_data or pattern.default)
 
     def close(self):
         self.pattern.signal.remove(self.pattern_signal)

@@ -30,3 +30,35 @@ class Test(BaseCase):
         self.eq(doc.get('field_list').pattern.type, Pattern.LIST)
         self.eq(doc.get('field_list').pattern, pattern_list)
         self.eq(doc.get('field_list').is_list, True)
+
+    def create_pattern(self):
+        self.pattern.add('text', type=Pattern.DICT)
+        self.pattern.get('text').add('ru', type=Pattern.DICT)
+        self.pattern.get('text').get('ru').add('title', type=Pattern.STR,
+                                               default='русский заголовок')
+        self.pattern.get('text').add('eng', type=Pattern.DICT)
+        self.pattern.get('text').get('eng').add('title', type=Pattern.STR,
+                                                default='english title')
+
+        self.pattern.add('gift', type=Pattern.LIST)
+        self.pattern.get('gift').items.add('type', type=Pattern.STR,
+                               values=['coins', 'coins_gold'], default='coins')
+        self.pattern.get('gift').items.add('value', type=Pattern.LIST,
+                                           item_type=Pattern.INT)
+        self.pattern.get('gift').items.get('value').items.default = 12
+
+    def test_pattern(self):
+        self.create_pattern()
+
+        data = {'text': {'ru': {'title': 'test value'},
+                         'eng': {'title': 'sample'}},
+                'gift': [{'type':'coins1', 'value':[1]},
+                         {'type':'coins_gold', 'value':[1, 34]}]
+                }
+        doc = self.table.add(1, data=data)
+
+        self.eq(doc.data(), {'text': {'ru': {'title': 'test value'},
+          'eng': {'title': 'sample'}}, 'gift': [{'type':'coins', 'value':[1]},
+                                    {'type':'coins_gold', 'value':[1, 34]}]})
+        self.eq(doc.get('text').get('ru').get('title').get(), 'test value')
+        self.eq(doc.get('text').get('eng').get('title').get(), 'sample')
