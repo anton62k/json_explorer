@@ -4,19 +4,22 @@ from jsondb.signal import signal, Signal
 
 class Base(object):
 
-    def __init__(self, name, class_item=None, is_list=False, ** kw):
-        self.name = str(name)
+    def __init__(self, name='', class_item=None, is_list=False, ** kw):
+        self.name = self.parse_name(name)
         self.is_list = is_list
         self.fields = {}
         self.signal = Signal()
         self.class_item = class_item or Base
 
-    def get_class_item(self, name, **kw):
+    def parse_name(self, name):
+        return str(name)
+
+    def get_class_item(self, **kw):
         return self.class_item
 
     def set(self, name, **kw):
-        return self.fields.setdefault(str(name),
-                                self.get_class_item(name, **kw)(name, **kw))
+        return self.fields.setdefault(self.parse_name(name),
+                            self.get_class_item(name=name, **kw)(name, **kw))
 
     @signal
     def add(self, name=None, **kw):
@@ -27,14 +30,14 @@ class Base(object):
         return self.set(name, **kw)
 
     def get(self, name):
-        return self.fields.get(str(name))
+        return self.fields.get(self.parse_name(name))
 
-    def remove_in_list(self, index):
+    def update_list(self, removed_index):
         for key in self.keys():
             current_index = int(key)
             new_key = str(current_index - 1)
 
-            if current_index > index:
+            if current_index > removed_index:
                 item = self.fields.pop(key)
                 item.name = new_key
                 self.fields.setdefault(new_key, item)
@@ -45,9 +48,9 @@ class Base(object):
         if not item:
             return
         item.close()
-        rt = self.fields.pop(str(name), None)
+        rt = self.fields.pop(self.parse_name(name), None)
         if self.is_list:
-            self.remove_in_list(int(name))
+            self.update_list(int(name))
         return rt
 
     @signal
