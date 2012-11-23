@@ -2,6 +2,7 @@ json_explorer
 =============
 
 TODO:
+* proxy method (add, remove, get, remove_all) for document (if document is list)
 * add dump and load utilities
 * pyqt gui
 * add support json schema (http://json-schema.org/)
