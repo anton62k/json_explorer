@@ -3,6 +3,10 @@ from ztest.test_case import BaseCase
 from jsondb.utils import dumps
 from jsondb.project import Project
 from jsondb.pattern import Pattern
+import shutil
+import os
+import codecs
+import json
 
 
 class Test(BaseCase):
@@ -31,5 +35,49 @@ class Test(BaseCase):
         test3.add('test_2', data={'test3': 10})
         test3.add('test_3', data={'test3': 11})
 
-    def test_dumps(self):
-        dumps('./', self.project)
+    @property
+    def path(self):
+        return './'
+
+    def clear_project(self):
+        for table in self.project:
+            shutil.rmtree(os.path.join(self.path, table.name))
+
+    def get_data(self, table, doc):
+        filepath = os.path.join(self.path, table.name, '%s.json' % doc.name)
+        f = codecs.open(filepath, 'r', 'utf8')
+        json_str = f.read()
+        f.close()
+        return json.loads(json_str, 'utf8')
+
+    def test_all_dumps(self):
+        dumps(self.path, self.project)
+
+        for table in self.project:
+            for doc in table:
+                file_data = self.get_data(table, doc)
+                self.eq(doc.data(), file_data)
+
+        self.clear_project()
+
+    def test_remove_doc(self):
+        dumps(self.path, self.project)
+
+        self.project.get('test2').remove('test1')
+        dumps(self.path, self.project)
+
+        filepath = os.path.join(self.path, 'test2', 'test1.json')
+        self.eq(os.path.exists(filepath), False)
+
+        self.clear_project()
+
+    def test_remove_table(self):
+        dumps(self.path, self.project)
+
+        self.project.remove('test2')
+        dumps(self.path, self.project)
+
+        filepath = os.path.join(self.path, 'test2')
+        self.eq(os.path.exists(filepath), False)
+
+        self.clear_project()
