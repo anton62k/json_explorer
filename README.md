@@ -2,6 +2,7 @@ json_explorer
 =============
 
 TODO:
+* refactoring document.add
 * add dump and load utilities
 * pyqt gui
 * add support json schema (http://json-schema.org/)
