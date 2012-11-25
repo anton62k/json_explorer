@@ -3,6 +3,8 @@ json_explorer
 
 TODO:
 * refactoring document.add
+* check "name" in document.add for document.type == Pattern.DYNAMIC_DICT
+** fix parse data sample: { 'key_dynamic' : {} }
 * add dump and load utilities
 * pyqt gui
 * add support json schema (http://json-schema.org/)
