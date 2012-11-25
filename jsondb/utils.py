@@ -44,7 +44,8 @@ def dumps(path, project):
         f.write(json_str)
         f.close()
 
-    dirs = filter(lambda item: os.path.isdir(item), os.listdir(path))
+    dirs = filter(lambda item: os.path.isdir(os.path.join(path, item)),
+                                                            os.listdir(path))
     dirs = map(lambda item: os.path.join(path, item), dirs)
 
     for table in project:

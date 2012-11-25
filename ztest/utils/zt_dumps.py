@@ -7,6 +7,7 @@ import shutil
 import os
 import codecs
 import json
+import tempfile
 
 
 class Test(BaseCase):
@@ -35,13 +36,10 @@ class Test(BaseCase):
         test3.add('test_2', data={'test3': 10})
         test3.add('test_3', data={'test3': 11})
 
-    @property
-    def path(self):
-        return './'
+        self.path = tempfile.mkdtemp()
 
     def clear_project(self):
-        for table in self.project:
-            shutil.rmtree(os.path.join(self.path, table.name))
+        shutil.rmtree(self.path)
 
     def get_data(self, table, doc):
         filepath = os.path.join(self.path, table.name, '%s.json' % doc.name)

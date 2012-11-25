@@ -11,7 +11,4 @@ class Project(Base):
         Base.__init__(self, name, class_item=Table, **kw)
 
     def add(self, name, **kw):
-        # if pattern and not pattern.type in self.root_table_types:
-        #    pass  # TODO сделать проверку
-
         return Base.add(self, name, pattern=Pattern(**kw))
