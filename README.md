@@ -8,6 +8,9 @@ TODO:
 * add dump and load utilities
 * pyqt gui
 * add support json schema (http://json-schema.org/)
+* add flash plugin
+* add hook for set()
+* add unique field and value for doc, table, project
 
 DONE
 * add pattern type LIST, DYNAMIC_DYCT (with different structures)
