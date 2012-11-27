@@ -2,6 +2,8 @@ json_explorer
 =============
 
 TODO:
+* add manager_pattern
+* add sub pattern structures
 * refactoring document.add
 * check "name" in document.add for document.type == Pattern.DYNAMIC_DICT
 ** fix parse data sample: { 'key_dynamic' : {} }
