@@ -40,3 +40,17 @@ class Test(BaseCase):
 
         doc.remove('10')
         self.eq(doc.data(), {})
+
+    def test_data(self):
+        doc = self.table.add(1, data={'test': {}, 'test2': {}})
+        self.eq(doc.data(), {'test': {}, 'test2': {}})
+
+        self.table.pattern.items.add('test', type=Pattern.INT)
+        self.eq(doc.data(), {'test': {'test': 0}, 'test2': {'test': 0}})
+
+        doc = self.table.add(2, data={'test': {}, 'test2': {}})
+        self.eq(doc.data(), {'test': {'test': 0}, 'test2': {'test': 0}})
+
+        doc = self.table.add(3, data={'test': {'test': 12},
+                                      'test2': {'test': 85}})
+        self.eq(doc.data(), {'test': {'test': 12}, 'test2': {'test': 85}})

@@ -6,7 +6,6 @@ TODO:
 * add sub pattern structures
 * refactoring document.add
 * check "name" in document.add for document.type == Pattern.DYNAMIC_DICT
-** fix parse data sample: { 'key_dynamic' : {} }
 * add dump and load utilities
 * pyqt gui
 * add support json schema (http://json-schema.org/)
@@ -15,6 +14,7 @@ TODO:
 * add unique field and value for doc, table, project
 
 DONE
+* fix parse data sample: { 'key_dynamic' : {} }
 * add pattern type LIST, DYNAMIC_DYCT (with different structures)
 * check signal (add, remove, change type)
 * testing different nested structures

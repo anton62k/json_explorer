@@ -91,23 +91,31 @@ class Document(Base):
 
         return self.class_item
 
-    def add_item(self, pattern, sub_data):
-        doc = self.add(pattern.name, pattern=pattern,
+    def add_item(self, pattern, sub_data, name=None):
+        doc = self.add(name=name, pattern=pattern,
                          data=sub_data)
 
         if pattern.type in self.value_types:
             field = doc
             field.set(sub_data or pattern.default)
 
+    def parse_list_data(self, data, pattern):
+        if self.type_list == Pattern.LIST:
+            for sub_data in data:
+                self.add_item(pattern, sub_data)
+
+        elif self.type_list == Pattern.DYNAMIC_DICT:
+            for name, sub_data in data.iteritems():
+                self.add_item(pattern, sub_data, name=name)
+
     def parse_data(self, data):
         if self.type_list:
             pattern = self.pattern.items
-            for sub_data in data:
-                self.add_item(pattern, sub_data)
+            self.parse_list_data(data, pattern)
         else:
             for pattern in self.pattern:
                 sub_data = data.get(pattern.name, {})
-                self.add_item(pattern, sub_data)
+                self.add_item(pattern, sub_data, name=pattern.name)
 
     def close(self):
         self.pattern.signal.remove(self.pattern_signal)
