@@ -1,4 +1,4 @@
-json_explorer
+JSON Explorer
 =============
 
 Versioning control system static data in your projects.
