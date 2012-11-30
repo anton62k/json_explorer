@@ -1,21 +1,11 @@
 json_explorer
 =============
 
-TODO:
-* add manager_pattern
-* add sub pattern structures
-* refactoring document.add
-* check "name" in document.add for document.type == Pattern.DYNAMIC_DICT
-* add dump and load utilities
-* pyqt gui
-* add support json schema (http://json-schema.org/)
-* add flash plugin
-* add hook for set()
-* add unique field and value for doc, table, project
+Versioning control system static data in your projects.
 
-DONE
-* fix parse data sample: { 'key_dynamic' : {} }
-* add pattern type LIST, DYNAMIC_DYCT (with different structures)
-* check signal (add, remove, change type)
-* testing different nested structures
-* testing data() method and 'data' param
+* support git and mercurial
+* storage of data in json format
+* subordination structure strict rules (schemas)
+* you create your own schemas json
+* support plugins (for example, to change values in project on formula)
+* storing binary resource repository or cdn
