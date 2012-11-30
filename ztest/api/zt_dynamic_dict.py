@@ -54,3 +54,12 @@ class Test(BaseCase):
         doc = self.table.add(3, data={'test': {'test': 12},
                                       'test2': {'test': 85}})
         self.eq(doc.data(), {'test': {'test': 12}, 'test2': {'test': 85}})
+
+    def test_nested_data(self):
+        table = self.project.add('nested_table')
+        table.pattern.add('test', type=Pattern.DYNAMIC_DICT)
+        table.pattern.get('test').items.add('field', type=Pattern.INT)
+
+        data = {'test': {'1': {'field': 100}, 'r2': {'field': 78}}}
+        doc = table.add(1, data=data)
+        self.eq(doc.data(), data)
