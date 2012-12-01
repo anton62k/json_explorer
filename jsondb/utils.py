@@ -44,20 +44,44 @@ def dumps(path, project):
         f.write(json_str)
         f.close()
 
-    dirs = filter(lambda item: os.path.isdir(os.path.join(path, item)),
-                                                            os.listdir(path))
-    dirs = map(lambda item: os.path.join(path, item), dirs)
+    def save_json_file(path, data):
+        json_str = json.dumps(data, ensure_ascii=False, indent=4)
+        f = codecs.open(path, mode='w+', encoding='utf8')
+        f.write(json_str)
+        f.close()
+
+    table_path = os.path.join(path, 'table')
+
+    if not os.path.exists(table_path):
+        os.mkdir(table_path)
+
+    dirs = filter(lambda item: os.path.isdir(os.path.join(table_path, item)),
+                                                    os.listdir(table_path))
+    dirs = map(lambda item: os.path.join(table_path, item), dirs)
 
     for table in project:
-        path_table = get_and_create_dir(path, table.name)
+        path_item = get_and_create_dir(table_path, table.name)
 
         for doc in table:
-            save_doc(path_table, doc)
+            save_doc(path_item, doc)
 
         try:
-            dirs.remove(path_table)
+            dirs.remove(path_item)
         except:
             pass
 
     for item in dirs:
         shutil.rmtree(item)
+
+    # scheme
+    scheme_path = os.path.join(path, 'scheme')
+
+    if not os.path.exists(scheme_path):
+        os.mkdir(scheme_path)
+
+    for item_name in os.listdir(scheme_path):
+        os.remove(os.path.join(scheme_path, item_name))
+
+    for table in project:
+        path_item = os.path.join(scheme_path, '%s.json' % table.name)
+        save_json_file(path_item, table.pattern.data())

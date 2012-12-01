@@ -48,24 +48,36 @@ class Test(BaseCase):
         test5.add(3).add('test')
 
         self.path = tempfile.mkdtemp()
+        self.path_table = os.path.join(self.path, 'table')
+        print self.path
 
     def clear_project(self):
         shutil.rmtree(self.path)
 
-    def get_data(self, table, doc):
-        filepath = os.path.join(self.path, table.name, '%s.json' % doc.name)
+    def get_data_doc(self, table, doc):
+        filepath = os.path.join(self.path_table, table.name, '%s.json' % doc.name)
+        return self.get_data_file(filepath)
+
+    def get_data_file(self, filepath):
         f = codecs.open(filepath, 'r', 'utf8')
         json_str = f.read()
         f.close()
         return json.loads(json_str, 'utf8')
+
+    def get_data_pattern(self, table):
+        filepath = os.path.join(self.path, 'scheme', '%s.json' % table.name)
+        return self.get_data_file(filepath)
 
     def test_all_dumps(self):
         dumps(self.path, self.project)
 
         for table in self.project:
             for doc in table:
-                file_data = self.get_data(table, doc)
+                file_data = self.get_data_doc(table, doc)
                 self.eq(doc.data(), file_data)
+
+            pattern_data = self.get_data_pattern(table)
+            self.eq(table.pattern.data(), pattern_data)
 
         self.clear_project()
 
@@ -75,7 +87,7 @@ class Test(BaseCase):
         self.project.get('test2').remove('test1')
         dumps(self.path, self.project)
 
-        filepath = os.path.join(self.path, 'test2', 'test1.json')
+        filepath = os.path.join(self.path_table, 'test2', 'test1.json')
         self.eq(os.path.exists(filepath), False)
 
         self.clear_project()
@@ -86,7 +98,7 @@ class Test(BaseCase):
         self.project.remove('test2')
         dumps(self.path, self.project)
 
-        filepath = os.path.join(self.path, 'test2')
+        filepath = os.path.join(self.path_table, 'test2')
         self.eq(os.path.exists(filepath), False)
 
         self.clear_project()
