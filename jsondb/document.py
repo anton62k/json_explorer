@@ -17,25 +17,7 @@ class Field(object):
         return self.value
 
     def set(self, value):
-
-        if self.pattern.type in [Pattern.INT, Pattern.FLOAT]:
-
-            if self.pattern.values and not value in self.pattern.values:
-                return self.get()
-
-            if not self.pattern.min == None and value < self.pattern.min:
-                return self.get()
-
-            if not self.pattern.max == None and value > self.pattern.max:
-                return self.get()
-
-        if self.pattern.type == Pattern.STR:
-
-            if self.pattern.values and not value in self.pattern.values:
-                return self.get()
-
         self.value = self.hook_set(self.pattern, self.value, value)
-
         return self.get()
 
     def data(self):
