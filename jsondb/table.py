@@ -12,3 +12,6 @@ class Table(Base):
 
     def add(self, name, data=None):
         return Base.add(self, name, data=data or {}, pattern=self.pattern)
+
+    def stats(self):
+        return Base.stats(self, {'document': self.length()})

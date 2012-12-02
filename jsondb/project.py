@@ -12,3 +12,6 @@ class Project(Base):
 
     def add(self, name, **kw):
         return Base.add(self, name, pattern=Pattern(**kw))
+
+    def stats(self):
+        return Base.stats(self, {'table': self.length()})

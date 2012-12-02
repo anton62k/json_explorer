@@ -1,5 +1,6 @@
 # coding: utf8
 from jsondb.signal import signal, Signal
+from collections import Counter
 
 
 class Base(object):
@@ -83,3 +84,10 @@ class Base(object):
 
     def length(self):
         return len(self.keys())
+
+    def stats(self, add=None):
+        counter = Counter()
+        for item in self:
+            counter.update(item.stats())
+        counter.update(add)
+        return counter

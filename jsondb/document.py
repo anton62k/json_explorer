@@ -1,6 +1,7 @@
 # coding: utf8
 from jsondb.base import Base
 from jsondb.pattern import Pattern
+from collections import Counter
 
 
 class Field(object):
@@ -42,6 +43,11 @@ class Field(object):
 
     def close(self):
         pass
+
+    def stats(self):
+        count = Counter()
+        count[self.pattern.type] = 1
+        return count
 
 
 class Document(Base):
@@ -122,3 +128,6 @@ class Document(Base):
     def close(self):
         self.pattern.signal.remove(self.pattern_signal)
         Base.close(self)
+
+    def stats(self):
+        return Base.stats(self, {'dict': 1} if self.pattern.type == Pattern.DICT else None)
