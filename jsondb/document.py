@@ -130,4 +130,5 @@ class Document(Base):
         Base.close(self)
 
     def stats(self):
-        return Base.stats(self, {'dict': 1} if self.pattern.type == Pattern.DICT else None)
+        return Base.stats(self,
+                {'dict': 1} if self.pattern.type == Pattern.DICT else None)
