@@ -8,8 +8,9 @@ class Field(object):
     def __init__(self, name, **kw):
         self.name = name
         self.pattern = kw.get('pattern')
-        self.value = self.pattern.default
         self.hook_set = self.pattern.hook_set
+        self.value = None
+        self.value = self.set(self.pattern.default)
 
     def get(self):
         return self.value
