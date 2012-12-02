@@ -32,7 +32,7 @@ class Field(object):
             if self.pattern.values and not value in self.pattern.values:
                 return self.get()
 
-        self.value = self.hook_set(self, self.value, value)
+        self.value = self.hook_set(self.pattern, self.value, value)
 
         return self.get()
 

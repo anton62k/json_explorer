@@ -42,7 +42,7 @@ class Pattern(Base):
         self.hook_set = default_hook_set
 
         for key in ['min', 'max', 'default', 'text', 'values', 'option',
-                    'items']:
+                    'items', 'incr']:
             setattr(self, key, kw.get(key, None))
 
         if self.type in self.default_mapper and not self.default:
@@ -82,7 +82,7 @@ class Pattern(Base):
         f = data.setdefault('$format', {})
 
         for key in ['type', 'min', 'max', 'default', 'text', 'values',
-                    'option']:
+                    'option', 'incr']:
             value = getattr(self, key)
             if value:
                 f.setdefault(key, value)
