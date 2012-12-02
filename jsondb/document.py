@@ -11,7 +11,7 @@ class Field(object):
         self.pattern = kw.get('pattern')
         self.hook_set = self.pattern.hook_set
         self.value = None
-        self.value = self.set(self.pattern.default)
+        self.set(self.pattern.default)
 
     def get(self):
         return self.value
