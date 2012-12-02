@@ -1,6 +1,7 @@
 # coding: utf8
 from jsondb.base import Base
 from jsondb.signal import signal
+from jsondb.hooks import default_hook_set
 
 
 class PatternError(Exception):
@@ -38,6 +39,7 @@ class Pattern(Base):
 
     def parse_kwargs(self, **kw):
         self.type = kw.get('type', Pattern.DICT)
+        self.hook_set = default_hook_set
 
         for key in ['min', 'max', 'default', 'text', 'values', 'option',
                     'items']:

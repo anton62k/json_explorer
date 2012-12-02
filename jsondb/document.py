@@ -9,6 +9,7 @@ class Field(object):
         self.name = name
         self.pattern = kw.get('pattern')
         self.value = self.pattern.default
+        self.hook_set = self.pattern.hook_set
 
     def get(self):
         return self.value
@@ -31,7 +32,7 @@ class Field(object):
             if self.pattern.values and not value in self.pattern.values:
                 return self.get()
 
-        self.value = value
+        self.value = self.hook_set(self, self.value, value)
 
         return self.get()
 
