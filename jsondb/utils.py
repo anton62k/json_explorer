@@ -10,8 +10,30 @@ class DumpsError(Exception):
     pass
 
 
+def get_data_file(filepath):
+    f = codecs.open(filepath, 'r', 'utf8')
+    json_str = f.read()
+    f.close()
+    return json.loads(json_str, 'utf8')
+
+
 def loads(path):
     project = Project()
+
+    tables_path = os.path.join(path, 'table')
+    scheme_path = os.path.join(path, 'scheme')
+
+    for table_item in os.listdir(tables_path):
+        scheme_data = get_data_file(os.path.join(scheme_path, '%s.json'
+                                                            % table_item))
+        table = project.add(table_item, data=scheme_data)
+
+        table_path = os.path.join(tables_path, table_item)
+
+        for doc_item in os.listdir(table_path):
+            doc_data = get_data_file(os.path.join(table_path, doc_item))
+            table.add(doc_item.replace('.json', ''), data=doc_data)
+
     return project
 
 

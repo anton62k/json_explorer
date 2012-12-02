@@ -1,13 +1,11 @@
 # coding: utf8
 from ztest.test_case import BaseCase
-from jsondb.utils import dumps
+from jsondb.utils import dumps, loads
 from jsondb.project import Project
 from jsondb.pattern import Pattern
-import shutil
-import os
-import codecs
-import json
 import tempfile
+import os
+import shutil
 
 
 class Test(BaseCase):
@@ -50,54 +48,17 @@ class Test(BaseCase):
         self.path = tempfile.mkdtemp()
         self.path_table = os.path.join(self.path, 'table')
 
-    def clear_project(self):
-        shutil.rmtree(self.path)
-
-    def get_data_doc(self, table, doc):
-        filepath = os.path.join(self.path_table, table.name, '%s.json' % doc.name)
-        return self.get_data_file(filepath)
-
-    def get_data_file(self, filepath):
-        f = codecs.open(filepath, 'r', 'utf8')
-        json_str = f.read()
-        f.close()
-        return json.loads(json_str, 'utf8')
-
-    def get_data_pattern(self, table):
-        filepath = os.path.join(self.path, 'scheme', '%s.json' % table.name)
-        return self.get_data_file(filepath)
-
-    def test_all_dumps(self):
+    def test_load(self):
         dumps(self.path, self.project)
+        project_load = loads(self.path)
 
         for table in self.project:
-            for doc in table:
-                file_data = self.get_data_doc(table, doc)
-                self.eq(doc.data(), file_data)
-
-            pattern_data = self.get_data_pattern(table)
-            self.eq(table.pattern.data(), pattern_data)
+            table_load = project_load.get(table.name)
+            self.eq(table.keys(), table_load.keys())
+            self.eq(table.data(), table_load.data())
+            self.eq(table.pattern.data(), table_load.pattern.data())
 
         self.clear_project()
 
-    def test_remove_doc(self):
-        dumps(self.path, self.project)
-
-        self.project.get('test2').remove('test1')
-        dumps(self.path, self.project)
-
-        filepath = os.path.join(self.path_table, 'test2', 'test1.json')
-        self.eq(os.path.exists(filepath), False)
-
-        self.clear_project()
-
-    def test_remove_table(self):
-        dumps(self.path, self.project)
-
-        self.project.remove('test2')
-        dumps(self.path, self.project)
-
-        filepath = os.path.join(self.path_table, 'test2')
-        self.eq(os.path.exists(filepath), False)
-
-        self.clear_project()
+    def clear_project(self):
+        shutil.rmtree(self.path)
