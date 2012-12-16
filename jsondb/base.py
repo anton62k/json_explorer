@@ -39,6 +39,13 @@ class Base(object):
             return
         return self.set(name, **kw)
 
+    def get_with_path(self, path):
+        sequence = path.split('.')
+        item = self.get(sequence.pop(0))
+        if len(sequence):
+            return item.get_with_path('.'.join(sequence))
+        return item
+
     def get(self, name):
         return self.fields.get(self.parse_name(name))
 

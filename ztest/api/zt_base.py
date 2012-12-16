@@ -195,3 +195,17 @@ class Test(BaseCase):
         self.eq(list_item2_list_item.path, '1.field.list.1.list.0')
         self.eq(list_item3.path, '1.field.list.2')
         self.eq(list_item3_item.path, '1.field.list.2.0')
+
+        # get_with_path
+        self.eq(self.base.get_with_path('1'), base1)
+        self.eq(self.base.get_with_path('1.field'), base1_field)
+        self.eq(self.base.get_with_path('1.field.list.1.list.0'), list_item2_list_item)
+        self.eq(self.base.get_with_path('1.field.list.2.0'), list_item3_item)
+
+        self.eq(base1.get_with_path('field'), base1_field)
+        self.eq(base1.get_with_path('field.list.1.list.0'), list_item2_list_item)
+        self.eq(base1.get_with_path('field.list.2.0'), list_item3_item)
+
+        self.eq(base_list.get_with_path('0'), list_item1)
+        self.eq(base_list.get_with_path('1.list.0'), list_item2_list_item)
+        self.eq(base_list.get_with_path('2.0'), list_item3_item)
