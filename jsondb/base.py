@@ -14,6 +14,13 @@ class Base(object):
         self.signal = Signal()
         self.class_item = class_item or Base
 
+    @property
+    def path(self):
+        path = self.name
+        if self.parent and self.parent.name:
+            path = '%s.%s' % (self.parent.path, path)
+        return path
+
     def parse_name(self, name):
         return str(name)
 

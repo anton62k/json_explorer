@@ -167,3 +167,31 @@ class Test(BaseCase):
 
         base_list = base1.add('list', type_list='list')
         self.eq(base_list.parent, base1)
+
+    def test_path(self):
+        self.eq(self.base.path, '')
+
+        base1 = self.base.add('1')
+        self.eq(base1.path, '1')
+
+        base1_field = base1.add('field')
+        self.eq(base1_field.path, '1.field')
+
+        base_list = base1_field.add('list', type_list='list')
+        self.eq(base_list.path, '1.field.list')
+
+        list_item1 = base_list.add()
+        list_item1_field = list_item1.add('field')
+        list_item2 = base_list.add()
+        list_item2_list = list_item2.add('list', type_list='list')
+        list_item2_list_item = list_item2_list.add()
+        list_item3 = base_list.add(type_list='list')
+        list_item3_item = list_item3.add()
+
+        self.eq(list_item1.path, '1.field.list.0')
+        self.eq(list_item1_field.path, '1.field.list.0.field')
+        self.eq(list_item2.path, '1.field.list.1')
+        self.eq(list_item2_list.path, '1.field.list.1.list')
+        self.eq(list_item2_list_item.path, '1.field.list.1.list.0')
+        self.eq(list_item3.path, '1.field.list.2')
+        self.eq(list_item3_item.path, '1.field.list.2.0')
