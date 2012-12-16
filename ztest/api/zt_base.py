@@ -158,3 +158,12 @@ class Test(BaseCase):
         self.eq(new_item.name, '1')
         self.eq(base_list.get(1), new_item)
         self.eq(base_list.length(), 2)
+
+    def test_parent(self):
+        self.eq(self.base.parent, None)
+
+        base1 = self.base.add('1')
+        self.eq(base1.parent, self.base)
+
+        base_list = base1.add('list', type_list='list')
+        self.eq(base_list.parent, base1)

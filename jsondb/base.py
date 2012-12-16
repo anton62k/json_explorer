@@ -5,9 +5,11 @@ from collections import Counter
 
 class Base(object):
 
-    def __init__(self, name='', class_item=None, type_list=None, ** kw):
+    def __init__(self, name='', class_item=None, type_list=None, parent=None,
+                                                                        ** kw):
         self.name = self.parse_name(name)
         self.type_list = type_list
+        self.parent = parent
         self.fields = {}
         self.signal = Signal()
         self.class_item = class_item or Base
@@ -20,7 +22,7 @@ class Base(object):
 
     def set(self, name, **kw):
         return self.fields.setdefault(self.parse_name(name),
-                            self.get_class_item(name=name, **kw)(name, **kw))
+                self.get_class_item(name=name, **kw)(name, parent=self, **kw))
 
     @signal
     def add(self, name=None, **kw):
