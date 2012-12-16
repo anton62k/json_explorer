@@ -84,6 +84,7 @@ class Base(object):
         return data
 
     def close(self):
+        self.parent = None
         self.remove_all()
 
     def __getitem__(self, key):
