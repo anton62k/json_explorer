@@ -2,7 +2,7 @@
 from ztest.test_case import BaseCase
 from jsondb.project import Project
 from jsondb.pattern import Pattern
-from jsondb.hooks import hook_int_float, hook_str
+from jsondb.hooks import hook_int_float, hook_str, hook_incr
 
 
 class Test(BaseCase):
@@ -21,4 +21,13 @@ class Test(BaseCase):
         self.eq(doc.get('float').get(), hook_int_float(self.float_p, 11.2, 14.9))
 
     def test_hook_incr(self):
-        self.eq(True, False)  # TODO
+        pattern = Pattern(project=self.project, type=Pattern.INT, incr='id')
+
+        # incr
+        self.eq(hook_incr(pattern, None, 0), 1)
+        # already incr
+        self.eq(hook_incr(pattern, None, 12), 12)
+        # already set
+        self.eq(hook_incr(pattern, 33, 0), 33)
+        # incr
+        self.eq(hook_incr(pattern, None, 0), 2)

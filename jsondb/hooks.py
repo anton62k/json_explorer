@@ -23,4 +23,6 @@ def hook_str(pattern, old_value, new_value):
 def hook_incr(pattern, old_value, new_value):
     if not old_value and not new_value:
         return pattern.project.values.incr(pattern.incr)
+    if not old_value and new_value:
+        return new_value
     return old_value
