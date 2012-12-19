@@ -19,3 +19,6 @@ class Test(BaseCase):
         self.eq(doc.get('int').get(), hook_int_float(self.int_p, 10, 12))
         self.eq(doc.get('str').get(), hook_str(self.str_p, 'test', 'test2'))
         self.eq(doc.get('float').get(), hook_int_float(self.float_p, 11.2, 14.9))
+
+    def test_hook_incr(self):
+        self.eq(True, False)  # TODO

@@ -55,3 +55,19 @@ class ProjectTest(BaseCase):
         table = self.project.add(self.table_name, type=Pattern.DYNAMIC_DICT)
 
         self.eq(table.pattern.type, Pattern.DYNAMIC_DICT)
+
+    def test_project_values(self):
+        self.eq(self.project.values.get('test'), 0)
+
+        self.eq(self.project.values.incr('test'), 1)
+        self.eq(self.project.values.get('test'), 1)
+
+        self.eq(self.project.values.incr('test'), 2)
+        self.eq(self.project.values.incr('test'), 3)
+        self.eq(self.project.values.incr('test'), 4)
+        self.eq(self.project.values.get('test'), 4)
+
+        self.eq(self.project.values.get('test1'), 0)
+        self.eq(self.project.values.get('test2'), 0)
+        self.eq(self.project.values.incr('test2'), 1)
+        self.eq(self.project.values.incr('test2'), 2)

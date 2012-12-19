@@ -1,6 +1,7 @@
 # coding: utf8
 from ztest.test_case import BaseCase
 from jsondb.project import Project
+from jsondb.pattern import Pattern
 
 
 class Test(BaseCase):
@@ -9,19 +10,29 @@ class Test(BaseCase):
         self.project = Project()
         self.table = self.project.add('test')
 
-    def test_project(self):
-        self.eq(self.project.values.get('test'), 0)
+    def test_one_field(self):
+        self.table.pattern.add('id', type=Pattern.INT, incr='test.id',
+                                                                default=12)
 
-        self.eq(self.project.values.incr('test'), 1)
-        self.eq(self.project.values.get('test'), 1)
+        self.eq(self.table.add(1).get('id').get(), 1)
+        self.eq(self.table.get(1).get('id').set(12), 1)
+        self.eq(self.table.get(1).get('id').get(), 1)
 
-        self.eq(self.project.values.incr('test'), 2)
-        self.eq(self.project.values.incr('test'), 3)
-        self.eq(self.project.values.incr('test'), 4)
-        self.eq(self.project.values.get('test'), 4)
+        self.eq(self.table.add(2).get('id').get(), 2)
+        self.eq(self.table.get(2).get('id').set(14), 2)
+        self.eq(self.table.get(2).get('id').get(), 2)
 
-        self.eq(self.project.values.get('test1'), 0)
-        self.eq(self.project.values.get('test2'), 0)
-        self.eq(self.project.values.incr('test2'), 1)
-        self.eq(self.project.values.incr('test2'), 2)
+        self.eq(self.table.add(3).get('id').get(), 3)
+        self.eq(self.table.get(2).get('id').set(14), 2)
+        self.eq(self.table.get(2).get('id').get(), 2)
+
+    def test_many_fields(self):
+        pass
+
+    def test_many_docs(self):
+        pass
+
+    def test_many_tables(self):
+        pass
+
 

@@ -1,7 +1,7 @@
 # coding: utf8
 from jsondb.base import Base
 from jsondb.signal import signal
-from jsondb.hooks import hook_int_float, hook_str
+from jsondb.hooks import hook_int_float, hook_str, hook_incr
 
 
 class PatternError(Exception):
@@ -39,6 +39,9 @@ class Pattern(Base):
             self.parse_kwargs(**kw)
 
     def get_hook(self):
+        if self.type == Pattern.INT and self.incr:
+            self.default = 0
+            return hook_incr
         if self.type in [Pattern.INT, Pattern.FLOAT]:
             return hook_int_float
         elif self.type in [Pattern.STR]:
@@ -46,11 +49,12 @@ class Pattern(Base):
 
     def parse_kwargs(self, **kw):
         self.type = kw.get('type', Pattern.DICT)
-        self.hook_set = self.get_hook()
 
         for key in ['min', 'max', 'default', 'text', 'values', 'option',
                     'items', 'incr']:
             setattr(self, key, kw.get(key, None))
+
+        self.hook_set = self.get_hook()
 
         if self.type in self.default_mapper and not self.default:
             self.default = self.default_mapper.get(self.type)
