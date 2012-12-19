@@ -29,6 +29,7 @@ class Pattern(Base):
 
     def __init__(self, name='', **kw):
         Base.__init__(self, name, class_item=Pattern, **kw)
+        self.project = kw.get('project')
         data = kw.get('data')
 
         if data:
@@ -56,7 +57,7 @@ class Pattern(Base):
 
         if self.type in Pattern.list_types:
             self.items = Pattern('$items',
-                                 type=kw.get('item_type', Pattern.DICT))
+                 type=kw.get('item_type', Pattern.DICT), project=self.project)
 
     def parse_data(self, data):
         f = data.pop('$format')
@@ -74,12 +75,12 @@ class Pattern(Base):
     def change_type_item(self, value, **kw):
         if not self.type in self.list_types:
             raise PatternError()
-        self.items = Pattern('$items', type=value, **kw)
+        self.items = Pattern('$items', type=value, project=self.project, **kw)
         return True
 
     def add(self, name, **kw):
         if self.type == Pattern.DICT:
-            return Base.add(self, name, **kw)
+            return Base.add(self, name, project=self.project, **kw)
         else:
             raise PatternError()
 

@@ -299,4 +299,44 @@ class Test(BaseCase):
                                                                 Pattern.INT)
         self.eq(self.pattern.get('gift').items.get('value').items.default, 12)
 
+    def test_link_project(self):
+        self.pattern.remove_all()
+        self.eq(self.pattern.data(), {'$format': {'type': 'dict'}})
+        self.pattern.parse_data(self.get_data_schema())
+
+        self.eq(self.pattern.project, self.project)
+        self.eq(self.pattern.get('text').project, self.project)
+        self.eq(self.pattern.get('text').get('ru').project, self.project)
+        self.eq(self.pattern.get('text').get('ru').get('title').project, self.project)
+        self.eq(self.pattern.get('gift').items.project, self.project)
+        self.eq(self.pattern.get('gift').items.get('type').project, self.project)
+        self.eq(self.pattern.get('gift').items.get('value').project, self.project)
+        self.eq(self.pattern.get('gift').items.get('value').items.project, self.project)
+
+        # dinamic
+        self.pattern.remove_all()
+
+        self.pattern.add('text', type=Pattern.DICT)
+        self.pattern.get('text').add('ru', type=Pattern.DICT)
+        self.pattern.get('text').get('ru').add('title', type=Pattern.STR,
+                                               default='русский заголовок')
+        self.pattern.get('text').add('eng', type=Pattern.DICT)
+        self.pattern.get('text').get('eng').add('title', type=Pattern.STR,
+                                                default='english title')
+
+        self.pattern.add('gift', type=Pattern.LIST)
+        self.pattern.get('gift').items.add('type', type=Pattern.STR,
+                               values=['coins', 'coins_gold'], default='coins')
+        self.pattern.get('gift').items.add('value', type=Pattern.LIST,
+                                           item_type=Pattern.INT)
+        self.pattern.get('gift').items.get('value').items.default = 12
+
+        self.eq(self.pattern.project, self.project)
+        self.eq(self.pattern.get('text').project, self.project)
+        self.eq(self.pattern.get('text').get('ru').project, self.project)
+        self.eq(self.pattern.get('text').get('ru').get('title').project, self.project)
+        self.eq(self.pattern.get('gift').items.project, self.project)
+        self.eq(self.pattern.get('gift').items.get('type').project, self.project)
+        self.eq(self.pattern.get('gift').items.get('value').project, self.project)
+        self.eq(self.pattern.get('gift').items.get('value').items.project, self.project)
 

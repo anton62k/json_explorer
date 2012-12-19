@@ -21,7 +21,7 @@ class Project(Base):
         Base.__init__(self, name, class_item=Table, **kw)
 
     def add(self, name, **kw):
-        return Base.add(self, name, pattern=Pattern(**kw))
+        return Base.add(self, name, pattern=Pattern(project=self, **kw))
 
     def stats(self):
         return Base.stats(self, {'table': self.length()})
