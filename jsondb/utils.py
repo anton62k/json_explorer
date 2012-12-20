@@ -22,6 +22,10 @@ def loads(path):
 
     tables_path = os.path.join(path, 'table')
     scheme_path = os.path.join(path, 'scheme')
+    setting_path = os.path.join(path, 'setting')
+
+    values = get_data_file(os.path.join(setting_path, 'values.json'))
+    project.values.update(values)
 
     for table_item in os.listdir(tables_path):
         scheme_data = get_data_file(os.path.join(scheme_path, '%s.json'
@@ -107,3 +111,12 @@ def dumps(path, project):
     for table in project:
         path_item = os.path.join(scheme_path, '%s.json' % table.name)
         save_json_file(path_item, table.pattern.data())
+
+    # settings
+    setting_path = os.path.join(path, 'setting')
+
+    if not os.path.exists(setting_path):
+        os.mkdir(setting_path)
+
+    save_json_file(os.path.join(setting_path, 'values.json'),
+                   dict(project.values))

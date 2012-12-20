@@ -12,6 +12,8 @@ class Test(BaseCase):
 
     def setUp(self):
         self.project = Project()
+        self.project.values.incr('test')
+        self.project.values.incr('test2')
 
         test1 = self.project.add('test1')
         test1.pattern.add('test1', type=Pattern.INT, default=1)
@@ -57,6 +59,8 @@ class Test(BaseCase):
             self.eq(table.keys(), table_load.keys())
             self.eq(table.data(), table_load.data())
             self.eq(table.pattern.data(), table_load.pattern.data())
+
+        self.eq(dict(self.project.values), dict(project_load.values))
 
         self.clear_project()
 
