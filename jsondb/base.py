@@ -51,11 +51,11 @@ class Base(object):
 
     def update_list(self, removed_index):
         for key in self.keys():
-            current_index = int(key)
+            current_index = key
             new_key = str(current_index - 1)
 
             if current_index > removed_index:
-                item = self.fields.pop(key)
+                item = self.fields.pop(self.parse_name(key))
                 item.name = new_key
                 self.fields.setdefault(new_key, item)
 
@@ -78,7 +78,8 @@ class Base(object):
         return True
 
     def keys(self):
-        return sorted(self.fields.keys())
+        map_f = lambda x: int(x) if isinstance(x, str) and x.isdigit() else x
+        return sorted(map(map_f, self.fields.keys()))
 
     def data(self):
         data = [] if self.type_list == 'list' else {}

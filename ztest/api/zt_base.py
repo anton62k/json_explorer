@@ -209,3 +209,12 @@ class Test(BaseCase):
         self.eq(base_list.get_with_path('0'), list_item1)
         self.eq(base_list.get_with_path('1.list.0'), list_item2_list_item)
         self.eq(base_list.get_with_path('2.0'), list_item3_item)
+
+    def test_keys(self):
+        items_name = ['1', 12, 10, '3', '4', '5', '6', '7', '8', '9', '11', 'a', 'b']
+
+        for i in xrange(0, len(items_name)):
+            item = self.base.add(items_name[i])
+            self.eq(item.name, str(items_name[i]))
+
+        self.eq(self.base.keys(), [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'a', 'b'])
