@@ -39,15 +39,19 @@ class Base(object):
             return
         return self.set(name, **kw)
 
-    def get_with_path(self, path):
-        sequence = path.split('.')
-        item = self.get(sequence.pop(0))
-        if len(sequence):
-            return item.get_with_path('.'.join(sequence))
-        return item
-
-    def get(self, name):
+    def get_item(self, name):
         return self.fields.get(self.parse_name(name))
+
+    def get(self, path):
+        if isinstance(path, int):
+            return self.get_item(path)
+
+        sequence = path.split('.')
+        item = self.get_item(sequence.pop(0))
+
+        if len(sequence):
+            return item.get('.'.join(sequence))
+        return item
 
     def update_list(self, removed_index):
         for key in self.keys():
