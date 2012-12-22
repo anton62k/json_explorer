@@ -7,13 +7,14 @@ Status: alpha version
 Features
 =============
 
+Text
+
 Project
 -------------
 
 ```
 from jsondb.project import Project
 project = Project()
-
 ```
 
 Table
