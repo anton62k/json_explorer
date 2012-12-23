@@ -2,6 +2,48 @@ JSON Explorer
 =============
 
 Versioning control system static data in your projects.
+Status: alpha version
+
+Features
+=============
+
+Text
+
+Project
+-------------
+
+```
+from jsondb.project import Project
+project = Project()
+```
+
+Table
+------------
+
+Text
+
+Document
+------------
+
+Text
+
+Pattern
+------------
+
+Text
+
+System increments
+------------
+
+Text
+
+Loads / dumps project
+------------
+
+Text
+
+TODO:
+------------
 
 * support git and mercurial
 * storage of data in json format

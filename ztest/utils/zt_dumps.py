@@ -78,6 +78,9 @@ class Test(BaseCase):
             pattern_data = self.get_data_pattern(table)
             self.eq(table.pattern.data(), pattern_data)
 
+        self.eq(self.get_data_file(os.path.join(self.path, 'setting',
+                                    'values.json')), dict(self.project.values))
+
         self.clear_project()
 
     def test_remove_doc(self):
