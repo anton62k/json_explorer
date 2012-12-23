@@ -71,3 +71,11 @@ class ProjectTest(BaseCase):
         self.eq(self.project.values.get('test2'), 0)
         self.eq(self.project.values.incr('test2'), 1)
         self.eq(self.project.values.incr('test2'), 2)
+
+    def test_data(self):
+        self.project.add('test').add(1)
+        self.project.add('test2').add(2)
+        self.project.values.incr('test_id')
+
+        self.eq(self.project.data(), {'values': {'test_id': 1},
+                        'table': {'test': {'1': {}}, 'test2': {'2': {}}}})

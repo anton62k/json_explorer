@@ -25,3 +25,6 @@ class Project(Base):
 
     def stats(self):
         return Base.stats(self, {'table': self.length()})
+
+    def data(self):
+        return {'table': Base.data(self), 'values': dict(self.values)}
