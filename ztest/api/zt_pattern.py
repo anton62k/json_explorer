@@ -189,65 +189,59 @@ class Test(BaseCase):
 
     def get_data_schema(self):
         return {
-            "text": {
-                "ru": {
-                    "$format": {
-                        "type": "dict"
-                    },
-                    "title": {
-                        "$format": {
-                            "default": "русский заголовок",
-                            "type": "str"
-                        }
-                    }
-                },
-                "$format": {
-                    "type": "dict"
-                },
-                "eng": {
-                    "$format": {
-                        "type": "dict"
-                    },
-                    "title": {
-                        "$format": {
-                            "default": "english title",
-                            "type": "str"
-                        }
-                    }
-                }
-            },
-            "$format": {
-                "type": "dict"
-            },
-            "gift": {
-                "$format": {
-                    "type": "list"
-                },
-                "$items": {
-                    "$format": {
-                        "type": "dict"
-                    },
-                    "type": {
-                        "$format": {
-                            "default": "coins",
-                            "type": "str",
-                            "values": [
-                                "coins",
-                                "coins_gold"
-                            ]
-                        }
-                    },
-                    "value": {
-                        "$format": {
-                            "type": "list"
+            "type": "dict",
+            "properties": {
+                "text": {
+                    "type": "dict",
+                    "properties": {
+                        "ru": {
+                            "type": "dict",
+                            "properties": {
+                                "title": {
+                                    "default": "русский заголовок",
+                                    "type": "str"
+                                }
+                            }
                         },
-                        "$items": {
-                            "$format": {
-                                "default": 12,
-                                "type": "int"
+                        "eng": {
+                            "type": "dict",
+                            "properties": {
+                                "title": {
+                                    "default": "english title",
+                                    "type": "str"
+                                }
                             }
                         }
                     }
+                },
+                "dynamic": {
+                    "items": {
+                        "type": "int"
+                    },
+                    "type": "dynamic_dict"
+                },
+                "gift": {
+                    "items": {
+                        "type": "dict",
+                        "properties": {
+                            "type": {
+                                "default": "coins",
+                                "values": [
+                                    "coins",
+                                    "coins_gold"
+                                ],
+                                "type": "str"
+                            },
+                            "value": {
+                                "items": {
+                                    "default": 12,
+                                    "type": "int"
+                                },
+                                "type": "list"
+                            }
+                        }
+                    },
+                    "type": "list"
                 }
             }
         }
@@ -268,12 +262,13 @@ class Test(BaseCase):
         self.pattern.get('gift').items.add('value', type=Pattern.LIST,
                                            item_type=Pattern.INT)
         self.pattern.get('gift').items.get('value').items.default = 12
+        self.pattern.add('dynamic', type=Pattern.DYNAMIC_DICT, item_type=Pattern.INT)
 
         self.eq(self.pattern.data(), self.get_data_schema())
 
         # set data
         self.pattern.remove_all()
-        self.eq(self.pattern.data(), {'$format': {'type': 'dict'}})
+        self.eq(self.pattern.data(), {'type': 'dict', 'properties': {}})
         self.pattern.parse_data(self.get_data_schema())
         self.eq(self.pattern.data(), self.get_data_schema())
 
@@ -299,9 +294,13 @@ class Test(BaseCase):
                                                                 Pattern.INT)
         self.eq(self.pattern.get('gift').items.get('value').items.default, 12)
 
+        self.eq(self.pattern.get('dynamic').type, Pattern.DYNAMIC_DICT)
+        self.eq(self.pattern.get('dynamic').items.type, Pattern.INT)
+        self.eq(self.pattern.get('dynamic').items.default, 0)
+
     def test_link_project(self):
         self.pattern.remove_all()
-        self.eq(self.pattern.data(), {'$format': {'type': 'dict'}})
+        self.eq(self.pattern.data(), {'type': 'dict', 'properties': {}})
         self.pattern.parse_data(self.get_data_schema())
 
         self.eq(self.pattern.project, self.project)

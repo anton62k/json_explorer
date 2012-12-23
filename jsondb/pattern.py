@@ -60,26 +60,28 @@ class Pattern(Base):
             self.default = self.default_mapper.get(self.type)
 
         if self.type in Pattern.list_types:
-            self.items = Pattern('$items',
+            self.items = Pattern('items',
                  type=kw.get('item_type', Pattern.DICT), project=self.project)
 
     def parse_data(self, data):
-        f = data.pop('$format')
+        properties = data.pop('properties', None)
+        items = data.pop('items', None)
+
         self.remove_all()
-        self.parse_kwargs(type=f.pop('type'), **f)
+        self.parse_kwargs(type=data.pop('type'), **data)
 
         if self.type in self.list_types:
-            self.items.parse_data(data.pop('$items'))
+            self.items.parse_data(items)
 
         elif self.type in Pattern.DICT:
-            for field in data:
-                self.add(field, data=data.get(field))
+            for field in properties:
+                self.add(field, data=properties.get(field))
 
     @signal
     def change_type_item(self, value, **kw):
         if not self.type in self.list_types:
             raise PatternError()
-        self.items = Pattern('$items', type=value, project=self.project, **kw)
+        self.items = Pattern('items', type=value, project=self.project, **kw)
         return True
 
     def add(self, name, **kw):
@@ -89,16 +91,16 @@ class Pattern(Base):
             raise PatternError()
 
     def data(self):
-        data = Base.data(self)
-        f = data.setdefault('$format', {})
+        data = {'properties': Base.data(self)} if self.type == Pattern.DICT \
+                                                                        else {}
 
         for key in ['type', 'min', 'max', 'default', 'text', 'values',
                     'option', 'incr']:
             value = getattr(self, key)
             if value:
-                f.setdefault(key, value)
+                data.setdefault(key, value)
 
         if self.type in Pattern.list_types:
-            data.setdefault('$items', self.items.data())
+            data.setdefault('items', self.items.data())
 
         return data
