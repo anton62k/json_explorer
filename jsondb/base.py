@@ -27,8 +27,11 @@ class Base(object):
     def get_class_item(self, **kw):
         return self.class_item
 
+    def add_to_fields(self, name, item):
+        return self.fields.setdefault(name, item)
+
     def set(self, name, **kw):
-        return self.fields.setdefault(self.parse_name(name),
+        return self.add_to_fields(self.parse_name(name),
                 self.get_class_item(name=name, **kw)(name, parent=self, **kw))
 
     @signal

@@ -48,11 +48,11 @@ class Pattern(Base):
             return hook_str
 
     def parse_kwargs(self, **kw):
-        self.type = kw.get('type', Pattern.DICT)
+        self.type = kw.pop('type', Pattern.DICT)
 
         for key in ['min', 'max', 'default', 'text', 'values', 'option',
                     'items', 'incr']:
-            setattr(self, key, kw.get(key, None))
+            setattr(self, key, kw.pop(key, None))
 
         self.hook_set = self.get_hook()
 
@@ -60,8 +60,18 @@ class Pattern(Base):
             self.default = self.default_mapper.get(self.type)
 
         if self.type in Pattern.list_types:
-            self.items = Pattern('items',
-                 type=kw.get('item_type', Pattern.DICT), project=self.project)
+            self.create_items(kw.pop('item_type', Pattern.DICT), **kw)
+
+    def create_items(self, type, **kw):
+        item_common = kw.get('item_common', None)
+        if item_common:
+            item = self.project.manager.get(item_common)
+            if not item:
+                raise PatternError()
+        else:
+            kw.setdefault('project', self.project)
+            item = Pattern('items', type=type, **kw)
+        self.items = item
 
     def parse_data(self, data):
         properties = data.pop('properties', None)
@@ -81,12 +91,21 @@ class Pattern(Base):
     def change_type_item(self, value, **kw):
         if not self.type in self.list_types:
             raise PatternError()
-        self.items = Pattern('items', type=value, project=self.project, **kw)
+        self.create_items(value, **kw)
         return True
+
+    def add_common(self, name, common, **kw):
+        item = self.project.manager.get(common)
+        if item:
+            return self.add_to_fields(name, item)
 
     def add(self, name, **kw):
         if self.type == Pattern.DICT:
-            return Base.add(self, name, project=self.project, **kw)
+            common = kw.pop('common', '')
+            if common:
+                return self.add_common(name, common, **kw)
+            else:
+                return Base.add(self, name, project=self.project, **kw)
         else:
             raise PatternError()
 

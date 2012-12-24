@@ -19,7 +19,7 @@ class Project(Base):
 
     def __init__(self, name='', **kw):
         self.values = Values()
-        self.pattern = ManagerPattern()
+        self.manager = ManagerPattern()
         Base.__init__(self, name, class_item=Table, **kw)
 
     def add(self, name, **kw):

@@ -51,3 +51,4 @@ TODO:
 * you create your own schemas json
 * support plugins (for example, to change values in project on formula)
 * storing binary resource repository or cdn
+* refactoring pattern and base.close() (item.close() if self == item.parent)
