@@ -19,14 +19,12 @@ class Project(Base):
 
     def __init__(self, name='', **kw):
         self.values = Values()
-        self.manager = ManagerPattern(project=self)
+        self.manager = ManagerPattern(self)
         Base.__init__(self, name, class_item=Table, **kw)
 
-    def add(self, name, **kw):
-        if 'common' in kw:
-            pattern = self.manager.get(kw.get('common'))
-        else:
-            pattern = Pattern(project=self, **kw)
+    def add(self, name, pattern_name=None, **kw):
+        common = pattern_name or '%s_root' % name
+        pattern = self.manager.get(common) or self.manager.add(common, **kw)
         return Base.add(self, name, pattern=pattern)
 
     def stats(self):

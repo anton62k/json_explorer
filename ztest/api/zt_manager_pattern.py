@@ -40,7 +40,7 @@ class Test(BaseCase):
         self.eq(self.price, map_object_price.items)
 
     def test_common_root(self):
-        artifact = self.project.add('artifact', common='price')
+        artifact = self.project.add('artifact', pattern_name='price')
         self.eq(artifact.pattern, self.price)
 
     def test_document(self):

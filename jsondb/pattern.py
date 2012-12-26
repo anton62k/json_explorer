@@ -103,6 +103,7 @@ class Pattern(Base):
         if self.type == Pattern.DICT:
             common = kw.pop('common', '')
             if common:
+                # return self.add_to_fields(name, pattern)
                 return self.add_common(name, common, **kw)
             else:
                 return Base.add(self, name, project=self.project, **kw)
