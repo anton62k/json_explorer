@@ -94,17 +94,15 @@ class Pattern(Base):
         self.create_items(value, **kw)
         return True
 
-    def add_common(self, name, common, **kw):
-        item = self.project.manager.get(common)
+    def add_from_manager(self, name, manager_name, **kw):
+        item = self.project.manager.get(manager_name)
         if item:
             return self.add_to_fields(name, item)
 
-    def add(self, name, **kw):
+    def add(self, name, manager_name=None, **kw):
         if self.type == Pattern.DICT:
-            common = kw.pop('common', '')
-            if common:
-                # return self.add_to_fields(name, pattern)
-                return self.add_common(name, common, **kw)
+            if manager_name:
+                return self.add_from_manager(name, manager_name, **kw)
             else:
                 return Base.add(self, name, project=self.project, **kw)
         else:

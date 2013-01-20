@@ -17,14 +17,14 @@ class Test(BaseCase):
 
     def test_add_common(self):
         map_object = self.project.add('map_object', type=Pattern.DICT)
-        map_object_price = map_object.pattern.add('price', common='price')
+        map_object_price = map_object.pattern.add('price', manager_name='price')
         self.eq(self.price, map_object_price)
 
         artifact = self.project.add('artifact', type=Pattern.DICT)
-        artifact_price = artifact.pattern.add('artifact_price', common='price')
+        artifact_price = artifact.pattern.add('artifact_price', manager_name='price')
         self.eq(self.price, artifact_price)
 
-        self.eq(artifact.pattern.add('test', common='unreal_common'), None)
+        self.eq(artifact.pattern.add('test', manager_name='unreal_common'), None)
 
         surprise = self.project.add('surprise', type=Pattern.DICT)
         surprise_price = surprise.pattern.add('list', type=Pattern.LIST,
@@ -40,16 +40,16 @@ class Test(BaseCase):
         self.eq(self.price, map_object_price.items)
 
     def test_common_root(self):
-        artifact = self.project.add('artifact', pattern_name='price')
+        artifact = self.project.add('artifact', manager_name='price')
         self.eq(artifact.pattern, self.price)
 
     def test_document(self):
         artifact = self.project.add('artifact')
-        artifact.pattern.add('price', common='price')
+        artifact.pattern.add('price', manager_name='price')
         artifact.pattern.add('test', type=Pattern.STR, default='temp')
 
         ruin = self.project.add('ruin')
-        ruin.pattern.add('price', common='price')
+        ruin.pattern.add('price', manager_name='price')
         ruin.pattern.add('value', type=Pattern.INT, default=0)
 
         #
@@ -72,7 +72,7 @@ class Test(BaseCase):
         self.eq(r.data(),
             {'value': 2, 'price': {'type': 'coins_gold', 'value': 22}})
 
-        # change common pattern
+        # change manager_name pattern
         self.price.add('chance', type=Pattern.LIST, item_type=Pattern.INT)
 
         art1.get('price.chance').add().set(1)
