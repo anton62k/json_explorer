@@ -62,10 +62,9 @@ class Pattern(Base):
         if self.type in Pattern.list_types:
             self.create_items(kw.pop('item_type', Pattern.DICT), **kw)
 
-    def create_items(self, type, **kw):
-        item_common = kw.get('item_common', None)
-        if item_common:
-            item = self.project.manager.get(item_common)
+    def create_items(self, type, item_manager_name=None, **kw):
+        if manager_name:
+            item = self.project.manager.get(manager_name)
             if not item:
                 raise PatternError()
         else:
@@ -94,15 +93,17 @@ class Pattern(Base):
         self.create_items(value, **kw)
         return True
 
-    def add_from_manager(self, name, manager_name, **kw):
+    def add_from_manager(self, name, **kw):
+        manager_name = kw.get('manager_name')
         item = self.project.manager.get(manager_name)
         if item:
             return self.add_to_fields(name, item)
 
-    def add(self, name, manager_name=None, **kw):
+    def add(self, name, **kw):
         if self.type == Pattern.DICT:
+            manager_name = kw.get('manager_name', None)
             if manager_name:
-                return self.add_from_manager(name, manager_name, **kw)
+                return self.add_from_manager(name, **kw)
             else:
                 return Base.add(self, name, project=self.project, **kw)
         else:

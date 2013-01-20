@@ -28,14 +28,14 @@ class Test(BaseCase):
 
         surprise = self.project.add('surprise', type=Pattern.DICT)
         surprise_price = surprise.pattern.add('list', type=Pattern.LIST,
-                                                    item_common='price').items
+                                                    item_manager_name='price').items
         self.eq(surprise_price, self.price)
 
     def test_change_item_type(self):
         map_object = self.project.add('map_object', type=Pattern.DICT)
         map_object_price = map_object.pattern.add('price', type=Pattern.LIST)
         self.neq(map_object_price.items, self.price)
-        map_object_price.change_type_item(None, item_common='price')
+        map_object_price.change_type_item(None, item_manager_name='price')
 
         self.eq(self.price, map_object_price.items)
 
